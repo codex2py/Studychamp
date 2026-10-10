@@ -1,18 +1,17 @@
-
-import { useState } from 'react'
-import { GraduationCap } from 'lucide-react'
+import { useState } from "react";
+import { GraduationCap } from "lucide-react";
 
 export default function Welcome({ onNameSaved }) {
-  const [name, setName] = useState('')
+  const [name, setName] = useState("");
 
   function handleSubmit(event) {
-    event.preventDefault()
+    event.preventDefault();
 
-    const trimmedName = name.trim()
+    const trimmedName = name.trim();
 
-    if (!trimmedName) return
+    if (!trimmedName) return;
 
-    onNameSaved(trimmedName)
+    onNameSaved(trimmedName);
   }
 
   return (
@@ -22,13 +21,13 @@ export default function Welcome({ onNameSaved }) {
           <GraduationCap size={30} />
         </div>
 
-        <h1 className="text-3xl font-bold text-text">
+        <h1 className="font-serif text-3xl font-semibold text-text">
           Welcome to StudyChamp
         </h1>
 
         <p className="mt-3 leading-6 text-text-secondary">
-          Your personal space to organise your courses, stay focused,
-          and make the most of your study time.
+          Your personal space to organise your courses, stay focused, and make
+          the most of your study time.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8">
@@ -64,5 +63,5 @@ export default function Welcome({ onNameSaved }) {
         </p>
       </div>
     </main>
-  )
+  );
 }
