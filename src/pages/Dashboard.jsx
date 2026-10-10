@@ -196,7 +196,97 @@ export default function Dashboard() {
             ))}
           </section>
 
-          
+          <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
+            <div className="min-w-0 space-y-6">
+                <section
+                    id="focus-space"
+                    className="scroll-mt-6 overflow-hidden rounded-2-xl border border-border bg-surface shadow-sm"
+                >
+                    <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-5 py-5 sm:px-6">
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-light text-primary">
+                                    <Timer size={19} />
+                                </div>
+
+                                <h2 className="text-lg font-bold">Your focus space</h2>
+                            </div>
+
+                            <p className="mt-2 text-sm text-text-secondary">
+                                One thing at a time. You've got this.
+                            </p>
+                        </div>
+
+                        {isRunning && (
+                            <span className="inline-flex items-center gap-2 rounded-full bg-success-light px-3 py-1.5 text-xs font-semibold text-success">
+                                <span className="h-2 w-2 animate-pulse rounded-full bg-success"/>
+                                Session in progress
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="p-5 sm:p-6">
+                        <div className="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <label className="block">
+                                <span className="mb-2 block text-xs font-semibold text-text-secondary">
+                                    STUDYING
+                                </span>
+
+                                <div className="relative">
+                                    <BookOpen size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
+
+                                    <select
+                                     value={selectedCourse} 
+                                     onChange={(event) => {
+                                        setSelectedCourse(event.target.value)
+                                        setSelectedTopic('')
+                                     }}
+                                     className="w-full appearance-none rounded-xl border border-border bg-background py-3 pl-10 pr-9 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                                    >
+                                        <option value="">Choose a course</option>
+                                    </select>
+
+                                    <ChevronDown size={16} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary" />
+                                </div>
+                            </label>
+                            <label className="block">
+                                <span className="mb-2 block text-xs font-semibold text-text-secondary">
+                                    TOPIC
+                                </span>
+                                <div className="relative">
+                                    <select 
+                                        value={selectedTopic}
+                                        onChange={(event) => 
+                                            setSelectedTopic(event.target.value)}
+                                            disabled={!selectedCourse}
+                                            className="w-full appearance-none rounded-xl border border-border bg-background px-3 py-3 pr-9 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:opacity-60"
+                                    >
+                                        <option value="">
+                                            {selectedCourse
+                                                ? 'Choose a topic'
+                                                : 'Choose a course first'}
+                                        </option>
+                                    </select>
+
+                                    <ChevronDown 
+                                        size={16}
+                                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary" 
+                                        />
+                                </div>
+                            </label>
+                        </div>
+
+                        <div className="flex flex-col items-center rounded-2xl bg-background px-4 py-7 sm:py-9">
+                            <div
+                                
+                            >
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+          </div>
         </div>
       </main>
     );
