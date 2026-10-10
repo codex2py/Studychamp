@@ -1,19 +1,84 @@
-export default function Dashboard() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold text-text">
-        welcome to StudyChamp 👋
-      </h1>
-      <p className="mt-2 text-text-secondary">
-        your personal space to study, focus and track your progress.
-      </p>
+import { useEffect, useState } from "react";
+import {
+     Clock3,
+  Target,
+  Flame,
+  Play,
+  Pause,
+  Check,
+  BookOpen,
+  ChevronDown,
+  TrendingUp,
+  Plus,
+  Coffee,
+  Sparkles,
+  Timer,
+  AlertCircle,
+  RotateCcw,
+} from 'lucide-react'
 
-      <div className="mt-6 rounded-2xl border border-border bg-surface p-6">
-        <h2 className="font-medium">ready to study?</h2>
-        <p className="mt-2 text-sm text-text-secondary">
-          your study dashboard will take shape here.
-        </p>
-      </div>
-    </div>
-  )
+const SESSION_LENGTH = 25 * 60
+
+const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+export default function Dashboard() {
+    const [elapsedSeconds, setElapsedSeconds] = useState(0)
+    const [savedElapsed, setSavedElapsed] = useState(0)
+    const [startedAt, setStartedAt] = useState(null)
+    const [isRunning, setIsRunning] = useState(false)
+    const [distractions, setDistractions] = useState(0)
+    const [selectedCourse, setSelectedCourse] = useState('')
+    const [selectedTopic, setSelectedTopic] = useState('')
+    const [sessionMessage, setSessionMessage] = useState('')
+
+    const today = new Date()
+    const dateLabel = new Intl.DateTimeFormat('en', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+    }).format(today)
+
+    const hour = today.getHours()
+    const greeting =
+        hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+
+    useEffect(() => {
+        if (!isRunning || startedAt === null) return
+
+        const interval = setInterval(() => {
+            const total = 
+                savedElapsed + Math.floor((Date.now() -startedAt) / 1000)
+
+            setElapsedSeconds(total)
+
+            if (total >= SESSION_LENGTH) {
+                setElapsedSeconds(SESSION_LENGTH)
+                setSavedElapsed(SESSION_LENGTH)
+                setIsRunning(false)
+                setStartedAt(null)
+                setSessionMessage('Your 25-minute focus timer is complete!')
+            }
+        }, 250)
+
+        return () => clearInterval(interval)
+    }, [isRunning, startedAt, savedElapsed])
+    
+    const remainingSeconds = Math.max(SESSION_LENGTH - elapsedSeconds, 0)
+    const progress = Math.min((elapsedSeconds / SESSION_LENGTH) * 100, 100)
+
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60) 
+        const remaining = seconds % 60 
+
+        return `${String(minutes).padStart(2, '0')}:${String(remaining).padStart(2, '0')}`
+    }
+
+    function startTimer() {
+        if (remainingSeconds <= 0) return
+
+        setSessionMessage('') 
+        setStartedAt(Date.now())
+        setIsRunning(true)
+    }
 }
