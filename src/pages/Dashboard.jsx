@@ -81,7 +81,7 @@ export default function Dashboard() {
     setIsRunning(true);
   }
 
-  function pauseTime() {
+  function pauseTimer() {
     if (startedAt !== null) {
       const total = savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
 
@@ -91,64 +91,113 @@ export default function Dashboard() {
 
     setStartedAt(null);
     setIsRunning(false);
+  }
 
-    function finishTimer() {
-      setIsRunning(false);
-      setStartedAt(null);
-    }
+  function finishTimer() {
+    setIsRunning(false);
+    setStartedAt(null);
+    setSavedElapsed(0);
+    setElapsedSeconds(0);
+    setDistractions(0);
+    setSessionMessage(
+      "Timer reset. Session history will be saved when storage is connected.",
+    );
+  }
 
-    function finishTimer() {
-      setIsRunning(false);
-      setStartedAt(null);
-      setSavedElapsed(0);
-      setElapsedSeconds(0);
-      setDistractions(0);
-      setSessionMessage(
-        "Timer reset. Session history will be saved when storage is connected.",
-      );
-    }
+  function logDistraction() {
+    setDistractions((count) => count + 1);
+  }
 
-    function logDistraction() {
-      setDistractions((count) => count + 1);
-    }
+  function handleStartStudying() {
+    document.getElementById("focus-space")?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }
 
-    function logDistraction() {
-      setDistractions((count) => count + 1);
-    }
-
-    function handleStartStudying() {
-      document.getElementById("focus-space")?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-
-    const stats = [
-      {
-        label: "Focus time today",
-        value: "—",
-        note: "Connect session history to track this",
-        icon: Clock3,
-        iconStyle: "bg-primary-light text-primary",
-      },
-      {
-        label: "Daily goal",
-        value: "—",
-        note: 'Set your goal in Settings',
-        icon: Target,
-        iconStyle: 'bg-accent-light text-accent',
-      },
-      {
-        label: 'Study streak',
-         value: '—',
-         note: 'Your streak starts with saved sessions',
-         icon: Flame,
-         iconStyle: 'bg-success-light text-success',
-      },
-    ];
+  const stats = [
+    {
+      label: "Focus time today",
+      value: "—",
+      note: "Connect session history to track this",
+      icon: Clock3,
+      iconStyle: "bg-primary-light text-primary",
+    },
+    {
+      label: "Daily goal",
+      value: "—",
+      note: "Set your goal in Settings",
+      icon: Target,
+      iconStyle: "bg-accent-light text-accent",
+    },
+    {
+      label: "Study streak",
+      value: "—",
+      note: "Your streak starts with saved sessions",
+      icon: Flame,
+      iconStyle: "bg-success-light text-success",
+    },
+  ];
 
     return (
-        
-    )
+      <main className="min-h-screen bg-background px-4 py-6 text-text sm:px-6 sm:py-8 lg:px-8">
+        <div className="mx-auto max-w-[1500px]">
+          <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+            <div>
+              <p className="mb-2 text-sm font-medium text-text-secondary">
+                {dateLabel}
+              </p>
+
+              <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                {greeting}, let's focus.
+              </h1>
+
+              <p className="mt-2 max-w-xl text-sm leading-6 text-text-secondary">
+                Small steps, focused sessions, and a little progress everyday.
+              </p>
+            </div>
+
+            <button
+              onClick={handleStartStudying}
+              className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:self-auto"
+            >
+              <Play size={17} fill="currentColor" />
+              Start studying
+            </button>
+          </header>
+
+          <section
+            aria-label="Study overview"
+            className="mb-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+          >
+            {stats.map(({ label, value, note, icon: Icon, iconStyle }) => (
+                <article 
+                    key={label}
+                    className="rounded-2xl border border-border bg-surface p-5 shadow-sm"
+                >
+                    <div className="flex items-start justify-between gap-3">
+                        <div>
+                            <p className="text-sm font-medium text-text-secondary">
+                                {label}
+                            </p>
+                            <p className="mt-3 text-3xl font-bold tracking-tight">
+                                {value}
+                            </p>
+                        </div>
+                        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconStyle}`}>
+                            <Icon size={21} />
+                        </div>
+                    </div>
+
+                    <p className="mt-4 text-xs leading-5 text-text-seconday">
+                        {note}
+                    </p>
+                </article>
+            ))}
+          </section>
+
+          
+        </div>
+      </main>
+    );
   }
-}
