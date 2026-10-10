@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/Applayout.jsx'
@@ -8,21 +7,22 @@ import Courses from './pages/Courses.jsx'
 import StudySessions from './pages/StudySessions.jsx'
 import Progress from './pages/Progress.jsx'
 import Settings from './pages/Settings.jsx'
+import { getStorageItem, setStorageItem, STORAGE_KEYS } from './utils/storage'
+
 
 const STORAGE_KEY = 'studychamp:userName'
 
 export default function App() {
   const [userName, setUserName] = useState(
-    () => localStorage.getItem(STORAGE_KEY) || '',
+    () => getStorageItem(STORAGE_KEYS.userName, '')
   )
 
   function handleNameSaved(name) {
-    const cleanName = name.trim()
+    const saved = setStorageItem(STORAGE_KEY.userName, name)
 
-    if (!cleanName) return
-
-    localStorage.setItem(STORAGE_KEY, cleanName)
-    setUserName(cleanName)
+    if(saved) {
+      setUserName(name)
+    }
   }
 
   if (!userName) {
