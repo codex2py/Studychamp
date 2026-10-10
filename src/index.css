@@ -1,9 +1,49 @@
+
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #292d35;
-  background: #f7f7f3;
+  /* Brand colours */
+  --color-primary: #5685F2;
+  --color-primary-hover: #4777E8;
+  --color-primary-light: #EDF2FF;
+
+  /* Supporting colours */
+  --color-success: #65956D;
+  --color-success-light: #EDF5EE;
+  --color-accent: #F29B62;
+  --color-accent-light: #FFF0E5;
+
+  /* Backgrounds */
+  --color-background: #F7F7F3;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F3F4F0;
+
+  /* Text */
+  --color-text: #292D35;
+  --color-text-secondary: #747985;
+  --color-text-muted: #8A8E97;
+  --color-text-inverse: #FFFFFF;
+
+  /* Borders */
+  --color-border: #EAEAE4;
+  --color-border-strong: #D9DCE3;
+
+  /* Typography */
+  --font-family-base: Inter, ui-sans-serif, system-ui, sans-serif;
+
+  /* Shape and spacing */
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --radius-input: 12px;
+
+  /* Effects */
+  --shadow-card: 0 1px 3px rgb(41 45 53 / 5%);
+  --focus-ring: 0 0 0 4px rgb(86 133 242 / 15%);
+
+  /* Base styles */
+  font-family: var(--font-family-base);
+  color: var(--color-text);
+  background: var(--color-background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,4 +58,26 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--color-background);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
 }
