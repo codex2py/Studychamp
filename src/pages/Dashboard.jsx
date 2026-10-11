@@ -459,13 +459,18 @@ export default function Dashboard() {
               <div className="relative flex items-start justify-between gap-3">
                 <div className="max-w-[230]">
                   <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-xs font-semibold text-text">
-                    <Sparkles size={14} className="text-accent" />
-                    A little reminder
+                    <Sparkles size={14} className="text-accent" />A little
+                    reminder
                   </div>
-                  <h2 className="font-serif text-2xl font-semibold leading-tight text-text">You've got this.</h2>
-                  <p>You don't have to finish everything today. Just give the 25 minutes your best.</p>
+                  <h2 className="font-serif text-2xl font-semibold leading-tight text-text">
+                    You've got this.
+                  </h2>
+                  <p>
+                    You don't have to finish everything today. Just give the 25
+                    minutes your best.
+                  </p>
                 </div>
-                {/* <ChampMascot /> */}
+                <ChampMascot />
               </div>
               <div className="relative mt-5 flex items-center gap-2 text-xs font-semibold text-text">
                 <Coffee size={16} className="text-accent" />
@@ -473,10 +478,77 @@ export default function Dashboard() {
               </div>
             </section>
 
-            
+            <section className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+                  <Target size={19} />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold">Today's tiny goal</h2>
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">
+                    Pick one topic, put your phone away, and focus till the
+                    timer ends. Starting is already progress.
+                  </p>
+                </div>
+              </div>
+            </section>
           </aside>
         </div>
+
+        <footer className="pb-4 pt-8 text-center text-xs text-text-muted">
+          One focused session at a time.
+        </footer>
       </div>
     </main>
+  );
+}
+
+function ChampMascot() {
+  return (
+    <svg
+      viewBox="0 0 120 130"
+      role="img"
+      aria-label="Champ, the StudyChamp mascot"
+      className="h-28 w-24 shrink-0 sm:h-32 sm:w-28"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M37 108 L34 119 Q33 124 42 124 L52 124 L54 109" fill="#3F72E8" />
+      <path
+        d="M72 109 L75 119 Q76 124 84 124 L94 124 Q99 122 95 117 L87 106"
+        fill="#3F72E8"
+      />
+      <path
+        d="M31 63 Q25 78 29 99 Q31 112 45 113 L79 113 Q94 111 95 97 L90 63 Z"
+        fill="#E98645"
+      />
+      <path d="M31 73 L20 91 Q17 97 23 100 Q28 102 32 95 L41 81" fill="#F5B77F" />
+      <path d="M90 73 L101 88 Q105 94 100 98 Q95 101 91 94 L82 81" fill="#F5B77F" />
+      <path
+        d="M29 38 Q29 20 47 17 L75 17 Q93 20 93 39 L91 65 Q88 81 61 83 Q34 81 31 65 Z"
+        fill="#FFD1A6"
+      />
+       <circle cx="29" cy="49" r="7" fill="#FFD1A6" />
+      <circle cx="93" cy="49" r="7" fill="#FFD1A6" />
+
+      <ellipse cx="47" cy="49" rx="3.3" ry="4.5" fill="#20242D" />
+      <ellipse cx="74" cy="49" rx="3.3" ry="4.5" fill="#20242D" />
+      <circle cx="48" cy="48" r="1.2" fill="white" />
+      <circle cx="75" cy="48" r="1.2" fill="white" />
+
+      <path
+        d="M49 62 Q61 73 73 62"
+        stroke="#20242D"
+        strokeWidth="2.8"
+        strokeLinecap="round"
+      />
+
+      <path d="M19 27 L59 8 L103 27 L61 45 Z" fill="#3F72E8" />
+      <path d="M34 33 L35 43 Q59 58 84 42 L85 32 L61 43 Z" fill="#2F60D3" />
+      <path d="M102 27 L102 43" stroke="#E98645" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="102" cy="45" r="3" fill="#E98645" />
+
+      <path d="M49 86 L61 97 L73 86" stroke="#FFF4E8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
