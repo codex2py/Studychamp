@@ -5,7 +5,6 @@ import {
   Flame,
   Play,
   Pause,
-  Check,
   BookOpen,
   ChevronDown,
   TrendingUp,
@@ -141,7 +140,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-background px-4 py-6 text-text sm:px-6 sm:py-8 lg:px-8">
-      <div className="mx-auto max-w-[1500px]">
+      <div className="mx-auto max-w-[1500]">
         <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="mb-2 text-sm font-medium text-text-secondary">
@@ -316,6 +315,14 @@ export default function Dashboard() {
                   <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
                     {isRunning ? (
                       <button
+                        onClick={pauseTimer}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                      >
+                        <Pause size={17} fill="currentColor" />
+                        Pause
+                      </button>
+                    ) : (
+                      <button
                         onClick={startTimer}
                         disabled={remainingSeconds === 0}
                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
@@ -323,15 +330,8 @@ export default function Dashboard() {
                         <Play size={17} fill="currentColor" />
                         {elapsedSeconds > 0 ? "Resume" : "Start focus"}
                       </button>
-                    ) : (
-                      <button
-                        onClick={pauseTimer}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
-                      >
-                        <Pause size={17} fill="currentColor" />
-                        Pause
-                      </button>
                     )}
+
                     <button
                       onClick={finishTimer}
                       disabled={elapsedSeconds === 0 && !isRunning}
@@ -522,13 +522,19 @@ function ChampMascot() {
         d="M31 63 Q25 78 29 99 Q31 112 45 113 L79 113 Q94 111 95 97 L90 63 Z"
         fill="#E98645"
       />
-      <path d="M31 73 L20 91 Q17 97 23 100 Q28 102 32 95 L41 81" fill="#F5B77F" />
-      <path d="M90 73 L101 88 Q105 94 100 98 Q95 101 91 94 L82 81" fill="#F5B77F" />
+      <path
+        d="M31 73 L20 91 Q17 97 23 100 Q28 102 32 95 L41 81"
+        fill="#F5B77F"
+      />
+      <path
+        d="M90 73 L101 88 Q105 94 100 98 Q95 101 91 94 L82 81"
+        fill="#F5B77F"
+      />
       <path
         d="M29 38 Q29 20 47 17 L75 17 Q93 20 93 39 L91 65 Q88 81 61 83 Q34 81 31 65 Z"
         fill="#FFD1A6"
       />
-       <circle cx="29" cy="49" r="7" fill="#FFD1A6" />
+      <circle cx="29" cy="49" r="7" fill="#FFD1A6" />
       <circle cx="93" cy="49" r="7" fill="#FFD1A6" />
 
       <ellipse cx="47" cy="49" rx="3.3" ry="4.5" fill="#20242D" />
@@ -545,10 +551,21 @@ function ChampMascot() {
 
       <path d="M19 27 L59 8 L103 27 L61 45 Z" fill="#3F72E8" />
       <path d="M34 33 L35 43 Q59 58 84 42 L85 32 L61 43 Z" fill="#2F60D3" />
-      <path d="M102 27 L102 43" stroke="#E98645" strokeWidth="3" strokeLinecap="round" />
+      <path
+        d="M102 27 L102 43"
+        stroke="#E98645"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
       <circle cx="102" cy="45" r="3" fill="#E98645" />
 
-      <path d="M49 86 L61 97 L73 86" stroke="#FFF4E8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M49 86 L61 97 L73 86"
+        stroke="#FFF4E8"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
