@@ -398,12 +398,17 @@ export default function Dashboard() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
                   <BookOpen size={23} />
                 </div>
-                <h3 className="text-sm font-semibold">Your learning journey starts here</h3>
-                <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary">Add your courses and topics to see your learning progress here.</p>
+                <h3 className="text-sm font-semibold">
+                  Your learning journey starts here
+                </h3>
+                <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary">
+                  Add your courses and topics to see your learning progress
+                  here.
+                </p>
 
-                <a 
-                href="/courses"
-                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                <a
+                  href="/courses"
+                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover"
                 >
                   <Plus size={16} />
                   Explore courses
@@ -411,7 +416,65 @@ export default function Dashboard() {
               </div>
             </section>
           </div>
-          
+
+          <aside className="min-w-0 space-y-6">
+            <section className="rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-bold">Your week so far</h2>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Your daily focus time
+                  </p>
+                </div>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success-light text-success">
+                  <TrendingUp size={20} />
+                </div>
+              </div>
+              <div className="mt-7 flex-h-36 items-end justify-between gap-2">
+                {WEEKDAYS.map((day) => (
+                  <div
+                    key={day}
+                    className="flex h-full flex-1 flex-col items-center justify-end gap-2"
+                  >
+                    <div className="flex h-full w-full items-end justify-center">
+                      <div className="h-1 w-full max-w-8 rounded-t-md bg-surface-muted" />
+                    </div>
+                    <span className="text-[11px] text-text-secondary">
+                      {day}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 rounded-xl bg-background p-4 text-center">
+                <p className="text-sm font-semibold">Your chart starts here</p>
+                <p className="mt-1 text-xs leading-5 text-text-secondary">
+                  Complete and save study sessions to see your weekly totals.
+                </p>
+              </div>
+            </section>
+
+            <section className="relative overflow-hidden rounded-2xl bg-accent-light p-5 sm:p-6">
+              <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full border-[18] border-white/30" />
+              <div className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full border-[16] border-white/30" />
+              <div className="relative flex items-start justify-between gap-3">
+                <div className="max-w-[230]">
+                  <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-xs font-semibold text-text">
+                    <Sparkles size={14} className="text-accent" />
+                    A little reminder
+                  </div>
+                  <h2 className="font-serif text-2xl font-semibold leading-tight text-text">You've got this.</h2>
+                  <p>You don't have to finish everything today. Just give the 25 minutes your best.</p>
+                </div>
+                {/* <ChampMascot /> */}
+              </div>
+              <div className="relative mt-5 flex items-center gap-2 text-xs font-semibold text-text">
+                <Coffee size={16} className="text-accent" />
+                Focus a little. Rest a little. Repeat.
+              </div>
+            </section>
+
+            
+          </aside>
         </div>
       </div>
     </main>
