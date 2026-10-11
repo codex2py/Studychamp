@@ -332,7 +332,7 @@ export default function Dashboard() {
                         Pause
                       </button>
                     )}
-                    <button 
+                    <button
                       onClick={finishTimer}
                       disabled={elapsedSeconds === 0 && !isRunning}
                       className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface px-5 py-3 text-sm font-semibold text-text transition hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
@@ -348,15 +348,70 @@ export default function Dashboard() {
                 </div>
 
                 {sessionMessage && (
-                  <p role="status" className="mt-4 rounded-xl bg-primary-light p-3 text-sm text-text">
+                  <p
+                    role="status"
+                    className="mt-4 rounded-xl bg-primary-light p-3 text-sm text-text"
+                  >
                     {sessionMessage}
                   </p>
                 )}
 
-                
+                <div className="mt-5 flex flex-col justify-between gap-3 rounded-xl border border-border p-4 sm:flex-row sm:items-center">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-light text-accent">
+                      <AlertCircle size={19} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">Got distracted?</p>
+                      <p className="mt-1 text-xs leading-5 text-text-secondary">
+                        Notice it, log it, and get back on track.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={logDistraction}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-border px-3 py-2 text-xs font-semibold transition hover:bg-surface-muted sm:self-auto"
+                  >
+                    <Plus size={15} />
+                    Log distraction ({distractions})
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-6">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-bold">Your courses</h2>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Keep track of what you're learning.
+                  </p>
+                </div>
+                <a
+                  href="/courses"
+                  className="shrink-0 text-sm font-semibold text-primary transition hover:text-primary-hover"
+                >
+                  View all
+                </a>
+              </div>
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border-strong px-5 py-9 text-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
+                  <BookOpen size={23} />
+                </div>
+                <h3 className="text-sm font-semibold">Your learning journey starts here</h3>
+                <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary">Add your courses and topics to see your learning progress here.</p>
+
+                <a 
+                href="/courses"
+                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                >
+                  <Plus size={16} />
+                  Explore courses
+                </a>
               </div>
             </section>
           </div>
+          
         </div>
       </div>
     </main>
