@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
+  ArrowUpRight,
   BookOpen,
   Check,
   ChevronDown,
@@ -217,7 +218,7 @@ function Courses() {
               {courses.length}
             </p>
             <p className="mt-1 text-xs text-text-muted">
-              {courses.length === 1 ? 'Subject added' : 'Subjects added'}
+              {courses.length === 1 ? "Subject added" : "Subjects added"}
             </p>
           </div>
           <div className="rounded-2xl border border-border bg-white p-5 sm:p-6">
@@ -241,8 +242,8 @@ function Courses() {
               <p className="text-sm font-medium text-text-secondary">
                 Topics completed
               </p>
-              <span className="flex-h-10 w-10 items-center justify-center rounded-xl bg-success-light text-success">
-                <Check  size={20} />
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-success-light text-success">
+                <Check size={20} />
               </span>
             </div>
             <p className="mt-4 text-3xl font-semibold tracking-tight text-text">
@@ -251,11 +252,204 @@ function Courses() {
             <p className="mt-1 text-xs text-text-muted">
               {totalTopics > 0
                 ? `${Math.round((completedTopics / totalTopics) * 100)}% of all topics`
-                : 'Your progress starts here'}
+                : "Your progress starts here"}
             </p>
           </div>
         </section>
-        
+
+        <section className="space-y-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-text">Your subjects</h2>
+              <p className="mt-1 text-sm text-text-secondary">
+                {courses.length === 0
+                  ? "Add your first course to get started."
+                  : `${courses.length} ${courses.length === 1 ? "course" : "courses"} in your library`}
+              </p>
+            </div>
+
+            {courses.length > 0 && (
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <label className="relative block sm:w-64">
+                  <Search
+                    size={18}
+                    className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
+                  />
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Search courses..."
+                    aria-label="Search courses"
+                    className="w-full rounded-xl border border-border bg-white py-3 pl-10 pr-4 text-sm text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10"
+                  />
+                </label>
+
+                <label className="relative block">
+                  <select
+                    value={sortBy}
+                    onChange={(event) => setSortBy(event.target.value)}
+                    aria-label="Sort courses"
+                    className="w-full appearance-none rounded-xl border border-border bg-white py-3 pl-4 pr-10 text-sm font-medium text-text outline-none transition focus:border-primary sm:w-44"
+                  >
+                    <option value="newest">Recently added</option>
+                    <option value="name">Course name</option>
+                    <option value="progress">Highest progress</option>
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted"
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+
+          {courses.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border-strong bg-white px-6 py-14 text-center sm:py-20">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-light text-primary">
+                <BookOpen size={30} strokeWidth={1.7} />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold text-text">
+                Your learning journey starts here
+              </h3>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
+                Create your first course to organize your subjects. You can
+                start with Biochemistry, Embryology, or whatever you are
+                currently studying.
+              </p>
+              <button
+                type="button"
+                onClick={openModal}
+                className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+              >
+                <Plus size={18} />
+                Create your first course
+              </button>
+              <p className="mt-4 text-xs text-text-muted">
+                Your courses are saved in this browser.
+              </p>
+            </div>
+          ) : filteredCourses.length === 0 ? (
+            <div className="rounded-2xl border border-border bg-white px-6 py-14 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-muted text-text-secondary">
+                <Search size={24} />
+              </div>
+              <h3 className="mt-4 font-semibold text-text">No courses found</h3>
+              <p className="mt-2 text-sm text-text-secondary">
+                Try another search term or clear your search
+              </p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="mt-4 text-sm font-semibold text-primary hover:text-primary-hover"
+              >
+                Clear search
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {filteredCourses.map((course) => {
+                const originalIndex = courses.findIndex(
+                  (item) => item.id === course.id,
+                )
+                const color = getCourseColor(
+                  originalIndex < 0 ? 0 : originalIndex,
+                )
+                const topics = Array.isArray(course.topics)
+                  ? course.topics
+                  : []
+                const finished = topics.filter(
+                  (topic) => topic.completed,
+                ).length
+                const progress = 
+                  topics.length > 0
+                    ? Math.round((finished / topics.length) * 100)
+                    : Number(course.progress) || 0
+
+                
+                return (
+                  <article 
+                    key={course.id}
+                    className="group flex min-w-0 flex-col rounded-2xl border border-border bg-white p-5 transition duration-200 hover:translate-y-0.5 hover:border-border-strong hover:shadow-md sm:p-6"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${color.background} ${color.text}`}>
+                        <BookOpen size={23} strokeWidth={1.8} />
+                      </div>
+                      <button 
+                        type="button"
+                        onClick={() => setCourseToDelete(course)}
+                        aria-label={`Delete ${course.name}`}
+                        title="Delete course"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted transition hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-200"
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </div>
+
+                    <div className="mt-5 min-w-0 flex-1">
+                      {course.code && (
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-text-muted">
+                          {course.code}
+                        </p>
+                      )}
+
+                      <h3 className="wrap-break-word text-lg font-semibold text-text">
+                        {course.name}
+                      </h3>
+                      <p className="mt-2 min-h-10 text-sm leading-5 text-text-secondary">
+                        {course.description || 
+                          'Build your understanding, one topic at a time.'}
+                      </p>
+                    </div>
+                    <div className="mt-6">
+                          <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+                            <span className="text-text-secondary">
+                               {topics.length} {topics.length === 1 ? 'topic' : 'topics'} 
+                            </span>
+                            <span className="font-semibold text-text">
+                              {progress}& complete
+                            </span>
+                          </div>
+                          <div 
+                            className="h-2 overflow-hidden rounded-full bg-surface-muted"
+                            role="progressbar"
+                            aria-label={`${course.name} progress`}
+                            aria-valuenow={progress}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                          >
+                            <div 
+                              className={`h-full rounded-full transition-all duration-300 ${color.bar}`}
+                              style={{
+                                width: `${Math.min(100, Math.max(0, progress))}%`,
+                              }}
+                            />
+                          </div>
+                    </div>
+                    <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+                      <span className="text-xs text-text-muted">
+                              {topics.length > 0 
+                                ?  `${finished} of ${topics.length} completed`
+                                :  'Ready to organize'}
+                      </span>
+                      <span className={`inline-flex items-center gap-1 text-sm font-semibold ${color.text}`}>
+                                {progress === 100 ? 'Completed' : 'In progress'}
+                                <ArrowUpRight size={15} />
+                      </span>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          )}
+        </section>
+
+
+        <section>
+          
+        </section>
       </div>
     </div>
   );
