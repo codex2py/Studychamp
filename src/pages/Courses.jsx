@@ -409,7 +409,7 @@ function Courses() {
                                {topics.length} {topics.length === 1 ? 'topic' : 'topics'} 
                             </span>
                             <span className="font-semibold text-text">
-                              {progress}& complete
+                              {progress}% complete
                             </span>
                           </div>
                           <div 
@@ -447,10 +447,198 @@ function Courses() {
         </section>
 
 
-        <section>
-          
+        <section className="flex flex-col gap-4 rounded-2xl border border-border bg-surface-muted/60 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-primary">
+              <CircleHelp size={21} />
+            </span>
+            <div>
+              <h3 className="font-semibold text-text">
+                A little organization goes a long way
+              </h3>
+              <p className="mt-1 text-sm leading-6 text-text-secondary">
+                Break large subjects into smaller topics to make studying easier to manage.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/"
+            className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary-hover"
+          >
+            Back to dashboard
+            <ArrowRight size={16} />
+          </Link>
         </section>
       </div>
+
+      {isModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-text/40 p-4 backdrop-blur-sm"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeModal()
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-course-title"
+            className="my-auto w-full max-w-lg rounded-2xl border border-border bg-white p-6 shadow-xl sm:py-8"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-primary">
+                  <GraduationCap size={23} />
+                </span>
+                <h2
+                  id="add-course-title"
+                  className="mt-4 text-xl font-semibold text-text"
+                >
+                  Add a new course
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-text-secondary">
+                  Set up a subject you want to study
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeModal}
+                aria-label="Close dialog"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-secondary transition hover:bg-surface-muted hover:text-text"
+              >
+                <X size={19} />
+              </button>
+            </div>
+            <form onSubmit={handleAddCourse} className="mt-7 space-y-5">
+              <div>
+                <label
+                 htmlFor="course-name"
+                 className="mb-2 block text-sm font-medium text-text"
+                >
+                  Course name <span className="text-accent">*</span>
+                </label>
+                <input 
+                  id="course-name"
+                  type="text"
+                  autoFocus
+                  required
+                  maxLength={80}
+                  value={courseName}
+                  onChange={(event) => {
+                    setCourseName(event.target.value)
+                    setFormError('')
+                  }}
+                  placeholder="e.g. Biochemistry"
+                  className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10"
+                />
+              </div>
+              <div>
+                <label 
+                  htmlFor="course-code"
+                  className="mb-2 block text-sm font-medium text-text"
+                >
+                  Course code <span className="text-text-muted">(optional)</span>
+                </label>
+                <input 
+                  id="course-code"
+                  type="text"
+                  maxLength={30}
+                  value={courseCode}
+                  onChange={(event) => setCourseCode(event.target.value)}
+                  placeholder="e.g BCH 301"
+                  className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10"
+                />
+              </div>
+              <div>
+                <label 
+                  htmlFor="course-description"
+                  className="mb-2 block text-sm font-medium text-text">
+                    Description{' '}
+                    <span className="text-text-muted">(optional)</span>
+                  </label>
+                  <textarea
+                   id="course-description"
+                   rows={3}
+                   maxLength={200}
+                   value={courseDescription}
+                   onChange={(event) =>
+                    setCourseDescription(event.target.value)
+                   }
+                   placeholder="What are you studying in this course"
+                   className="w-full resize-y rounded-xl border border-border bg-white px-4 py-3 text-sm leading-6 text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10"
+                   />
+              </div>
+              {formError && (
+                <p role="alert" className="text-sm font-medium text-red-600">
+                  {formError}
+                </p>
+              )}
+              <div className="flex flex-col reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+                <button>
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="rounded-xl border border-border px-5 py-3 text-sm font-semibold text-text-secondary transition hover:bg-surface-muted"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                  >
+                    <Plus size={17} />
+                    Create course
+                  </button>
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {courseToDelete && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-text/40 p-4 backdrop-blur-sm">
+          <section 
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-course-title"
+            className="w-full max-w-sm rounded-2xl border border-border bg-white p-6 shadow-xl"
+          >
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-50">
+              <Trash2 size={21} />
+            </span>
+            <h2 
+              id="delete-course-title"
+              className="mt-4 text-lg font-semibold text-text"
+            >
+              Delete this course?
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              Are you sure you want to delete{' '}
+              <span className="font-semibold text-text">
+                {courseToDelete.name}
+              </span>
+              ? This removes the course and its stored topics from this browser.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setCourseToDelete(null)}
+                className="flex-1 rounded-xl border border-border px-4 py-3 text-sm font-semibold text-text-secondary transition hover:bg-surface-muted"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button"
+                onClick={handleDeleteCourse}
+                className="flex-1 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
