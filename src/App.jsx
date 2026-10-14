@@ -7,6 +7,7 @@ import Courses from './pages/Courses.jsx'
 import StudySessions from './pages/StudySessions.jsx'
 import Progress from './pages/Progress.jsx'
 import Settings from './pages/Settings.jsx'
+import CourseDetails from './pages/CourseDetails.jsx'
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from './utils/storage'
 
 
@@ -36,6 +37,7 @@ export default function App() {
       <Route element={<AppLayout userName={userName} />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/courses" element={<Courses />} />
+        <Route path="/courses/:courseId" element={<CourseDetails />} />
         <Route path="/sessions" element={<StudySessions />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/settings" element={<Settings />} />
