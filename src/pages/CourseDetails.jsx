@@ -417,8 +417,46 @@ function CourseDetails() {
             </p>
           </div>
         </div>
-
       </div>
+
+      {topicToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-text/40 p-4 backdrop-blur-sm">
+          <section 
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-topic-title"
+            className="w-full max-w-sm rounded-2xl border border-border bg-white p-6 shadow-xl"
+          >
+            <h2
+              id="delete-topic-title"
+              className="text-lg font-semibold"
+            >
+              Delete this topic
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              This will remove "{topicToDelete.name}" from {course.name}.
+            </p>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setTopicToDelete(null)}
+                className="flex-1 rounded-xl border border-border px-4 py-3 text-sm font-semibold text-text-secondary transition hover:bg-surface-muted"
+              >
+                Cancel
+              </button>
+
+              <button 
+                type="button"
+                onClick={handleDeleteTopic}
+                className="flex-1 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }
