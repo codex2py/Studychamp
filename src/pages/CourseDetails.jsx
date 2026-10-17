@@ -6,7 +6,6 @@ import {
   Check,
   CircleCheck,
   Clock3,
-  Copy,
   Plus,
   Trash2,
   X,
@@ -374,7 +373,7 @@ function CourseDetails() {
 
                     <div className="min-w-0 flex-1">
                       <p
-                        className={`break-words text-sm font-medium ${
+                        className={`wrap-break-word text-sm font-medium ${
                           topic.completed
                             ? 'text-text-muted line-through'
                             : 'text-text'
