@@ -403,7 +403,20 @@ function CourseDetails() {
             </div>
           )}
         </section>
-
+        
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface-muted/60 p-5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-success">
+            <Check size={21} />
+          </span>
+          <div>
+            <h3 className="text-sm font-semibold">
+              Small steps still count
+            </h3>
+            <p>
+              Focus on understanding one topic at a time. Your progress will updated as your complete them.
+            </p>
+          </div>
+        </div>
 
       </div>
     </div>
