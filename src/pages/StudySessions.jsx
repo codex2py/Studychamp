@@ -212,4 +212,36 @@ function StudySession() {
 
     setSessionToDelete(null);
   }
+
+  return (
+    <div className="min-h-screen bg-background px-4 py-6 text-text sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl space-y-8">
+        <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div>
+            <p className="mb-2 text-sm font-semibold text-primary">
+              YOUR STUDY JOURNEY
+            </p>
+            <h1 className="font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+              Study Sessions
+            </h1>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-text-secondary sm:text-base">
+              Look back at your study sessions and see how you're spending your focus time.
+            </p>
+          </div>
+
+          <Link
+            to="/"
+            className="inline-flex w-fit items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+          >
+          <Clock3 size={18} />
+          Start studying
+          </Link>
+        </section>
+
+        
+      </div>
+    </div>
+  )
 }
+
+export default StudySession
