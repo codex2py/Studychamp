@@ -32,8 +32,8 @@ function formatDuration(seconds) {
 }
 
 function getSessionDuration(session) {
-  if (typeof session.durationSecconds === "number") {
-    return session.durationSecconds;
+  if (typeof session.durationSeconds === "number") {
+    return session.durationSeconds;
   } 
 
   if (typeof session.elapsedSeconds === "number") {
@@ -148,7 +148,7 @@ function StudySession() {
           courseName,
           topicName: topic,
           date,
-          durationSecconds: getSessionDuration(session),
+          durationSeconds: getSessionDuration(session),
           distractionTotal: getDistractionCount(session),
           isCompleted,
         };
@@ -238,8 +238,262 @@ function StudySession() {
           </Link>
         </section>
 
-        
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            <SummaryCard 
+              icon={<Clock3 size={21} />}
+              label="Total focus time"
+              value={formatDuration(totalSeconds)}
+              description="Across all saved sessions"
+              iconStyle="bg-primary-light text-primary"
+            />
+
+            <SummaryCard 
+              icon={<CheckCircle2 size={21} />}
+              label="Completed sessions"
+              value={completedSessions.length}
+              description="Sessions marked as finished"
+              iconStyle="bg-success-light text-success"
+            />
+
+            <SummaryCard 
+              icon={<CalendarDays size={21} />}
+              label="Study days"
+              value={uniqueStudyDays}
+              description="Different days with completed sessions"
+              iconStyle="bg-accent-light text-accent"
+            />
+        </section>
+
+        <section className="overflow-hidden rounded-2xl border border-border bg-white">
+          <div className="border-b border-border p-5 sm:p-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <History size={21} className="text-primary" />
+                  <h2 className="text-lg font-semibold">Session history</h2>
+                </div>
+
+                <p className="mt-1 text-sm text-text-secondary">
+                  {filteredSessions.length}{""}
+                  {filteredSessions.length === 1 ? "session" : "sessions"}{" "}
+                  found
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="relative min-w-0 sm:w-64">
+                  <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+
+                  <input 
+                    type="search"
+                    value={searchTerm}
+                    onChange={(event) => setSearchTerm(event.target.value)}
+                    placeholder="Search courses or topics..."
+                    aria-label="Search sessions"
+                    className="w-full rounded-xl border border-border bg-background py-2.5 pl-9 pr-3 text-sm outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10"
+                  />
+                </div>
+
+                <div>
+                  <Filter 
+                    size={16}
+                    className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                    />
+
+                    <select
+                      value={filter}
+                      onChange={(event) => setFilter(event.target.value)}
+                      aria-label="Filter sessions"
+                      className="w-full appearance-none rounded-xl border border-border bg-white py-2.5 pl-9 pr-8 text-sm outline-none transition focus:border-primary sm:w-auto"
+                    >
+                      <option value="all">All sessions</option>
+                      <option value="completed">Completed</option>
+                      <option value="unfinished">Unfinished</option>
+                    </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {filteredSessions.length > 0 ? (
+            <div className="divide-y divide-border">
+             {filteredSessions.map((session) => (
+               <article
+                key={session.displayId}
+                className="flex flex-col gap-4 p-5 transition hover:bg-background/60 sm:p-6 md:flex-row md:items-center"
+               >
+                <div className="flex min-w-0 flex-1 items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+                  <BookOpen size={21} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="wrap-break-word font-semibold text-text">
+                      {session.courseName}
+                    </h3>
+                    <p className="mt-1 wrap-break-word text-sm text-text-secondary">
+                      {session.topicName || "General study session"}
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-text-muted">
+                      <span className="inline-flex items-center gap-1.5">
+                        <CalendarDays size={14} />
+                        {formatSessionDate(session.date)}
+                      </span>
+                      {session.date && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <Clock3 size={14} />
+                          {formatSessionTime(session.date)}
+                        </span>
+                      )}
+
+                      {session.distractionTotal > 0 && (
+                        <span>
+                          {session.distractionTotal}{" "}
+                          {session.distractionTotal === 1
+                            ? "distraction"
+                            : "distractions"}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 border-t border-border pt-4 md:border-0 md:pt-0">
+                  <div>
+                    <p className="text-lg font-semibold tabular-nums">
+                      {formatDuration(session.durationSeconds)}
+                    </p>
+                    <span
+                      className={`mt-1 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+                        session.isCompleted
+                          ? "bg-success-light text-success"
+                          : "bg-accent-light text-[#A95826]"
+                      }`}
+                    >
+                      {session.isCompleted ? "Completed" : "Unfinished"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSessionToDelete(session.displayId)}
+                    aria-label={`Delete session for ${session.courseName}`}
+                    title="Delete session"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-muted transition hover:bg-red-50 hover:text-red-600"
+                  >
+                    <Trash2 size={17} />
+                  </button>
+                </div>
+              </article>
+             ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center px-6 py-16 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-light text-primary">
+                {searchTerm || filter !== "all" ? (
+                  <Search size={28} />
+                ) : (
+                  <Target size={28} />
+                )}
+              </div>
+              <h3 className="mt-5 text-lg font-semibold">
+                {searchTerm || filter !== "all"
+                  ? "No matching sessions"
+                  : "Your study journey starts here"}
+              </h3>
+
+              <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary">
+                {searchTerm || filter !== "all"
+                  ? "Try a different search term or change the filter."
+                  : "Once you finish and save study sessions, you'll find your history and focus time here."}
+              </p>
+
+              {searchTerm || filter !== "all" ? (
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setFilter("all");
+                  }}
+                  className="mt-5 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold transition hover:bg-background"
+                >
+                  Clear filters
+                </button>
+              ) : (
+                <Link
+                  to="/"
+                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                >
+                  <Clock3 size={17} />
+                  Start a session
+                </Link>
+              )}
+            </div>
+          )}
+        </section>
+
+        <p className="text-center text-xs leading-5 text-text-muted">
+          Your session history is stored locally in this browser.
+        </p>
       </div>
+
+      {sessionToDelete !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              setSessionToDelete(null);
+            }
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-session-title"
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-red-600">
+                <Trash2 size={21} />
+              </div>
+
+              <button 
+                type="button"
+                onClick={() => setSessionToDelete(null)}
+                aria-label="Close confirmation"
+                className="rounded-lg p-2 text-text-muted transition hover:bg-background"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <h2 
+              id="delete-session-title"
+              className="mt-4 text-lg font-semibold"
+            >
+              Delete this session?
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              This will permanently remove the session from your saved history in this browser.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button 
+                type="button"
+                onClick={() => setSessionToDelete(null)}
+                className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold transition hover:bg-background"
+              >
+                Cancel
+              </button>
+              <button
+              type="button"
+              onClick={handleDeleteSession}
+              className="rounded-2xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                Delete session
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
