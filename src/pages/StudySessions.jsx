@@ -92,7 +92,7 @@ function getDistractionCount(session) {
   return Number(session.distractionCount) || 0;
 }
 
-function StudySession() {
+function StudySessions() {
   const [sessions, setSessions] = useState(() => {
     const saved = getStorageItem(STORAGE_KEYS.sessions, []);
     return Array.isArray(saved) ? saved : [];
@@ -186,11 +186,6 @@ function StudySession() {
 
   const completedSessions = enrichedSessions.filter(
     (session) => session.isCompleted,
-  );
-
-  const completedSeconds = completedSessions.reduce(
-    (total, session) => total + session.durationSeconds,
-    0,
   );
 
   const uniqueStudyDays = new Set(
@@ -498,4 +493,21 @@ function StudySession() {
   )
 }
 
-export default StudySession
+function SummaryCard({ icon, label, value, description, iconStyle}) {
+  return (
+    <div className="rounded-2xl border border-border bg-white p-5 sm:p-6">
+      <div
+        className={`flex h-11 w-11 items-center justify-center rounded-xl ${iconStyle}`}
+      >
+        {icon}
+      </div>
+      <p className="mt-5 text-sm font-medium text-text-secondary">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl">
+        {value}
+      </p>
+      <p className="mt-2 text-xs leading-5 text-text-muted">{description}</p>
+    </div>
+  )
+}
+
+export default StudySessions
