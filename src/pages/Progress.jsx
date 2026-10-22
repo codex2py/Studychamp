@@ -128,3 +128,54 @@ function getDailyGoal(preferences) {
 
   return null
 }
+
+function StatCard({ icon: Icon, label, value, detail, color, background }) {
+  return (
+    <div className='rounded-2xl border border-border bg-surface p-5'>
+      <div className='flex items-start justify-between gap-3'>
+        <div>
+          <p className='text-sm font-medium text-text-secondary'>{label}</p>
+          <p className='mt-3 text-3xl font-bold tracking-tight text-text'>
+            {value}
+          </p>
+          <p className='mt-2 text-xs leading-5 text-text-muted'>{detail}</p>
+        </div>
+        <div 
+          className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl'
+          style={{ backgroundColor: background, color }}
+        >
+          <Icon size={21} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SectionHeading({ title, description, action }) {
+  return (
+    <div className='mb-5 flex flex-wrap items-end justify-between gap-3'>
+      <div>
+        <h2 className='text-lg font-bold text-text'>{title}</h2>
+        {description && (
+          <p className='mt-1 text-sm text-text-muted'>{description}</p>
+        )}
+      </div>
+      {action}
+    </div>
+  )
+}
+
+function EmptyState({ icon: Icon, title, description }) {
+  return (
+    <div className='flex min-h-44 flex-col items-center justify-center px-5 py-8 text-center'>
+      <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary'>
+        <Icon size={23} />
+      </div>
+      <h3 className='font-semibold text-text'>{title}</h3>
+      <p className='mt-2 max-w-sm text-sm leading-6 text-text-muted'>
+        {description}
+      </p>
+    </div>
+  )
+}
+
