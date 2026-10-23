@@ -179,3 +179,215 @@ function EmptyState({ icon: Icon, title, description }) {
   )
 }
 
+export default function Progress() {
+  const [sessions, setSessions] = useState(() => {
+    const saved = getStorageItem(STORAGE_KEYS.sessions, [])
+    Array.isArray(saved) ? saved : []
+  })
+
+  const [courses, setCourses] = useState(() => {
+    const saved = getStorageItem(STORAGE_KEYS.courses, [])
+    return Array.isArray(saved) ? saved : []
+  })
+
+  const [preferences, setPreferences] = useState(() => 
+    getStorageItem(STORAGE_KEYS.preferences, {}) ?? {}
+  )
+
+  const [period, setPeriod] = useState('week')
+
+  useEffect(() => {
+    function refreshData() {
+      const savedSessions = getStorageItem(STORAGE_KEYS.sessions, [])
+      const savedCourses = getStorageItem(STORAGE_KEYS.courses, [])
+      const savedPreferences = getStorageItem(STORAGE_KEYS.preferences, {})
+
+      setSessions(Array.isArray(savedSessions) ? savedSessions : [])
+      setCourses(Array.isArray(savedCourses) ? savedCourses : [])
+      setPreferences(savedPreferences ?? {})
+    }
+
+    function handleStorage(event) {
+      if (
+        event.key === null ||
+        event.key === STORAGE_KEYS.sessions ||
+        event.key === STORAGE_KEYS.courses ||
+        event.key === STORAGE_KEYS.preferences
+      ) {
+        refreshData()
+      }
+    }
+
+    window.addEventListener('focus', refreshData)
+    window.addEventListener('storage', handleStorage)
+
+    return () => {
+      window.removeEventListener('focus', refreshData)
+      window.removeEventListener('storage', handleStorage)
+    }
+  }, [])
+
+  const now = new Date()
+  const todayKey = getDayKey(now)
+  const weekStart = getMonday(now)
+
+  const validSessions = sessions
+    .filter((session) => session && typeof session === 'object')
+    .map((session) => ({
+      ...session,
+      dateObject: getSessionDate(session),
+      durationSeconds: getDuration(session),
+      completedStatus: isCompleted(session),
+      resolvedCourseName: getCourseName(session, courses),
+    }))
+    .filter((session) => session.dateObject !== null)
+
+  const completedSessions = validSessions.filter(
+    (session) => session.completedStatus
+  )
+
+  const totalFocusSeconds = completedSessions.reduce(
+    (total, session) => total + session.durationSeconds,
+    0
+  )
+
+  const studiedDays = new Set(
+    completedSessions.map((session) => getDayKey(session.dateObject))
+  )
+  
+  const todaySeconds = completedSessions
+    .filter((session) => getDayKey(session.dateObject) === todayKey)
+    .reduce((total, session) => total + session.durationSeconds, 0)
+
+  const thisWeekSeconds = completedSessions
+    .filter((session) => session.dateObject >= weekStart)
+    .reduce((total, session) => total + session.durationSeconds, 0)
+
+  const previousWeekStart = new Date(weekStart)
+  previousWeekStart.setDate(previousWeekStart.getDate() - 7)
+
+  const previousWeekSeconds = completedSessions
+    .filter(
+      (session) => 
+        session.dateObject >= previousWeekStart &&
+        session.dateObject < weekStart
+    )
+    .reduce((total, session) => total = session.durationSeconds, 0)
+
+  const weekDifference = 
+    previousWeekSeconds > 0
+      ? Math.round(
+        ((thisWeekSeconds - previousWeekSeconds) / previousWeekSeconds) *
+          100
+      )
+      : null
+
+  const chartDays = period === 'week' ? 7 : 30
+  const chartData = []
+
+  for (let index = chartDays - 1; index >= 0; index -= 1) {
+    const date = getStartOfDay(now)
+    date.setDate(date.getDate() - index)
+
+    const key = getDayKey(date)
+    const seconds = completedSessions
+      .filter((session) => getDayKey(session.dateObject) === key)
+      .reduce((total, session) => total + session.durationSeconds, 0)
+
+    chartData.push({
+      key,
+      seconds,
+      label:
+        period === 'week'
+          ? date.toLocaleDateString('en', { weekday: 'short'})
+          : String(date.getDate()),
+      fullLabel: date.toLocaleDateString('en', {
+        month: 'short',
+        day: 'numeric',
+      }),
+    })
+  }
+
+  const chartTotal = chartData.reduce(
+    (total, day) => total + day.seconds,
+    0
+  )
+
+  const chartMax = Math.max(3600, ...chartData.map((day) => day.seconds))
+
+  const calendarData = []
+
+  for (let index = 27; index >= 0; index -= 1) {
+    const date = getStartOfDay(now)
+    date.setDate(date.getDate() - index)
+
+    const key = getDayKey(date)
+    const seconds = completedSessions
+      .filter((session) => getDayKey(session.dateObject) === key)
+      .reduce((total,session) => total + session.durationSeconds, 0)
+
+    calendarData.push({ date, key, seconds })
+  }
+
+  const calendarMax = Math.max(
+    1,
+    ...calendarData.map((day) => day.seconds)
+  )
+
+  const averageSessionSeconds =
+    completedSessions.length > 0
+      ? totalFocusSeconds / completedSessions.length
+      : 0
+
+  const courseProgress = courses
+    .filter((course) => course && typeof course === 'object')
+    .map((course) => {
+      const courseSessions = completedSessions.filter((session) => {
+        const sessionCourseId = session.courseId = session.courseId ?? session.course?.id
+
+        if (sessionCourseId != null && course.id != null) {
+          return sessionCourseId === course.id
+        }
+
+        return session.resolvedCourseName === course.name
+      })
+
+      return {
+        ...course,
+        progressValue: getCourseProgress(course),
+        sessionCount: courseSessions.length,
+        focusSeconds: courseSessions.reduce(
+          (total, session) => total + session.durationSeconds,
+          0
+        ),
+      }
+    })
+    .sort((a, b) => b.focusSeconds - a.focusSeconds)
+
+  const dailyGoalSeconds = getDailyGoal(preferences)
+  const dailyGoalProgress = 
+    dailyGoalSeconds !== null
+      ? Math.min((todaySeconds / dailyGoalSeconds) * 100, 100)
+      : 0
+
+  const weekEnd = new Date(weekStart)
+  weekEnd.setDate(weekEnd.getDate() + 6)
+
+  const weekRange = `${weekStart.toLocaleDateString('en', {
+    month: 'short',
+    day: 'numeric',
+  })} – ${weekEnd.toLocaleDateString('en', {
+    month: 'short',
+    day: 'numeric',
+  })}`
+
+  const intensityColors = [
+    'var(--color-surface-muted)',
+    '#DDE7FF',
+    '#B6CAFF',
+    '#7FA1F5',
+    'var(--color-primary)',
+  ]
+
+
+}
