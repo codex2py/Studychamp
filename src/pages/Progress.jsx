@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import {
   ArrowDownRight,
@@ -22,17 +21,17 @@ function getDuration(session) {
     session.duration ??
     0
 
-    const seconds = Number(value)
-    return Number.isFinite(seconds) && seconds > 0 ? seconds : 0
+  const seconds = Number(value)
+  return Number.isFinite(seconds) && seconds > 0 ? seconds : 0
 }
 
 function getSessionDate(session) {
-  const value = 
+  const value =
     session.completedAt ??
-    session.endedAt ?? 
+    session.endedAt ??
     session.date ??
     session.startedAt ??
-    session.createdAt 
+    session.createdAt
 
   if (!value) return null
 
@@ -72,16 +71,17 @@ function getMonday(date) {
 function formatDuration(seconds) {
   const safeSeconds = Math.max(0, Math.floor(seconds))
   const hours = Math.floor(safeSeconds / 3600)
-  const minutes =Math.floor((safeSeconds % 3600) / 60)
+  const minutes = Math.floor((safeSeconds % 3600) / 60)
 
   if (hours > 0) {
     return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`
   }
+
   return `${minutes}m`
 }
 
 function formatHours(seconds) {
-  return Number((seconds / 3600). toFixed(1)).toString()
+  return Number((seconds / 3600).toFixed(1)).toString()
 }
 
 function getCourseName(session, courses) {
@@ -119,8 +119,8 @@ function getDailyGoal(preferences) {
     preferences?.studyGoalHours,
   ]
 
-  for (const value of value) {
-    if (value === undefined || value === null ||  value === '') continue
+  for (const value of values) {
+    if (value === undefined || value === null || value === '') continue
 
     const goal = Number(value)
     if (Number.isFinite(goal) && goal > 0) return goal * 3600
@@ -131,17 +131,18 @@ function getDailyGoal(preferences) {
 
 function StatCard({ icon: Icon, label, value, detail, color, background }) {
   return (
-    <div className='rounded-2xl border border-border bg-surface p-5'>
-      <div className='flex items-start justify-between gap-3'>
+    <div className="rounded-2xl border border-border bg-surface p-5">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <p className='text-sm font-medium text-text-secondary'>{label}</p>
-          <p className='mt-3 text-3xl font-bold tracking-tight text-text'>
+          <p className="text-sm font-medium text-text-secondary">{label}</p>
+          <p className="mt-3 text-3xl font-bold tracking-tight text-text">
             {value}
           </p>
-          <p className='mt-2 text-xs leading-5 text-text-muted'>{detail}</p>
+          <p className="mt-2 text-xs leading-5 text-text-muted">{detail}</p>
         </div>
-        <div 
-          className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl'
+
+        <div
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
           style={{ backgroundColor: background, color }}
         >
           <Icon size={21} />
@@ -153,11 +154,11 @@ function StatCard({ icon: Icon, label, value, detail, color, background }) {
 
 function SectionHeading({ title, description, action }) {
   return (
-    <div className='mb-5 flex flex-wrap items-end justify-between gap-3'>
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className='text-lg font-bold text-text'>{title}</h2>
+        <h2 className="text-lg font-bold text-text">{title}</h2>
         {description && (
-          <p className='mt-1 text-sm text-text-muted'>{description}</p>
+          <p className="mt-1 text-sm text-text-muted">{description}</p>
         )}
       </div>
       {action}
@@ -167,12 +168,12 @@ function SectionHeading({ title, description, action }) {
 
 function EmptyState({ icon: Icon, title, description }) {
   return (
-    <div className='flex min-h-44 flex-col items-center justify-center px-5 py-8 text-center'>
-      <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary'>
+    <div className="flex min-h-44 flex-col items-center justify-center px-5 py-8 text-center">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
         <Icon size={23} />
       </div>
-      <h3 className='font-semibold text-text'>{title}</h3>
-      <p className='mt-2 max-w-sm text-sm leading-6 text-text-muted'>
+      <h3 className="font-semibold text-text">{title}</h3>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-text-muted">
         {description}
       </p>
     </div>
@@ -182,7 +183,7 @@ function EmptyState({ icon: Icon, title, description }) {
 export default function Progress() {
   const [sessions, setSessions] = useState(() => {
     const saved = getStorageItem(STORAGE_KEYS.sessions, [])
-    Array.isArray(saved) ? saved : []
+    return Array.isArray(saved) ? saved : []
   })
 
   const [courses, setCourses] = useState(() => {
@@ -190,7 +191,7 @@ export default function Progress() {
     return Array.isArray(saved) ? saved : []
   })
 
-  const [preferences, setPreferences] = useState(() => 
+  const [preferences, setPreferences] = useState(() =>
     getStorageItem(STORAGE_KEYS.preferences, {}) ?? {}
   )
 
@@ -254,7 +255,7 @@ export default function Progress() {
   const studiedDays = new Set(
     completedSessions.map((session) => getDayKey(session.dateObject))
   )
-  
+
   const todaySeconds = completedSessions
     .filter((session) => getDayKey(session.dateObject) === todayKey)
     .reduce((total, session) => total + session.durationSeconds, 0)
@@ -268,18 +269,18 @@ export default function Progress() {
 
   const previousWeekSeconds = completedSessions
     .filter(
-      (session) => 
+      (session) =>
         session.dateObject >= previousWeekStart &&
         session.dateObject < weekStart
     )
-    .reduce((total, session) => total = session.durationSeconds, 0)
+    .reduce((total, session) => total + session.durationSeconds, 0)
 
-  const weekDifference = 
+  const weekDifference =
     previousWeekSeconds > 0
       ? Math.round(
-        ((thisWeekSeconds - previousWeekSeconds) / previousWeekSeconds) *
-          100
-      )
+          ((thisWeekSeconds - previousWeekSeconds) / previousWeekSeconds) *
+            100
+        )
       : null
 
   const chartDays = period === 'week' ? 7 : 30
@@ -299,7 +300,7 @@ export default function Progress() {
       seconds,
       label:
         period === 'week'
-          ? date.toLocaleDateString('en', { weekday: 'short'})
+          ? date.toLocaleDateString('en', { weekday: 'short' })
           : String(date.getDate()),
       fullLabel: date.toLocaleDateString('en', {
         month: 'short',
@@ -324,7 +325,7 @@ export default function Progress() {
     const key = getDayKey(date)
     const seconds = completedSessions
       .filter((session) => getDayKey(session.dateObject) === key)
-      .reduce((total,session) => total + session.durationSeconds, 0)
+      .reduce((total, session) => total + session.durationSeconds, 0)
 
     calendarData.push({ date, key, seconds })
   }
@@ -343,7 +344,7 @@ export default function Progress() {
     .filter((course) => course && typeof course === 'object')
     .map((course) => {
       const courseSessions = completedSessions.filter((session) => {
-        const sessionCourseId = session.courseId = session.courseId ?? session.course?.id
+        const sessionCourseId = session.courseId ?? session.course?.id
 
         if (sessionCourseId != null && course.id != null) {
           return sessionCourseId === course.id
@@ -365,7 +366,7 @@ export default function Progress() {
     .sort((a, b) => b.focusSeconds - a.focusSeconds)
 
   const dailyGoalSeconds = getDailyGoal(preferences)
-  const dailyGoalProgress = 
+  const dailyGoalProgress =
     dailyGoalSeconds !== null
       ? Math.min((todaySeconds / dailyGoalSeconds) * 100, 100)
       : 0
@@ -389,5 +390,177 @@ export default function Progress() {
     'var(--color-primary)',
   ]
 
+  return (
+    <main className='min-h-screen bg-background px-4 py-6 sm:px-6 lg:px-8'>
+      <div className='mx-auto max-w-7xl space-y-8'>
+        <header className='flex flex-col justify-between gap-5 sm:flex-row sm:items-end'>
+          <div>
+            <p className='text-xs font-bold uppercase tracking-[0.18em] text-primary'>
+              YOUR GROWTH
+            </p>
+            <h1 className='mt-2 font-display text-3xl font-semibold tracking-tight text-text sm:text-4xl'>
+              Progress
+            </h1>
+            <p className='mt-3 max-w-xl text-sm leading-6 text-text-secondary'>
+              See how your study habits are developing, celebrate your consistency, and find out where your time goes.
+            </p>
+          </div>
 
+            <div className="flex items-center gap-2 self-start rounded-xl border border-border bg-surface px-3 py-2 text-sm text-text-secondary sm:self-auto">
+            <CalendarDays size={17} className="text-primary" />
+            {now.toLocaleDateString('en', {
+              month: 'long',
+              year: 'numeric',
+            })}
+          </div>
+        </header>
+
+        <section className='grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4'>
+          <StatCard 
+            icon={Clock3}
+            label="Total focus time"
+            value={`${formatHours(totalFocusSeconds)}h`}
+            detail="From completed study sessions"
+            color="var(--color-primary)"
+            background="var(--color-primary-light)"
+          />
+          <StatCard 
+            icon={CheckCircle2}
+            label="Completed sessions"
+            value={completedSessions.length}
+            detail={`${formatDuration(averageSessionSeconds)} average per session`}
+            color="var(--color-success)"
+            background="var(--color-success-light)"
+          />
+          <StatCard 
+            icon={Flame}
+            label="Study days"
+            value={studiedDays.size}
+            detail="Different days with completed sessions "
+            color="var(--color-accent)"
+            background="var(--color-accent-light)"
+          />
+          <StatCard 
+            icon={BookOpen}
+            label="Courses"
+            value={courses.length}
+            detail="Courses saved in your library"
+            color="var(--color-primary)"
+            background="var(--color-primary-light)"
+          />
+        </section>
+        <section className='grid grid-cols-1 gap-6 xl:grid-[1.7fr_1fr]'>
+          <div className='rounded-2xl border border-border bg-surface p-5 sm:p-6'>
+            <SectionHeading 
+              title="Focus time"
+              description={
+                period === 'week'
+                  ? `Your study time this week · ${weekRange}`
+                  : 'Your daily focus time over the last 30 days'
+              }
+              action={
+                <div className='flex rounded-xl bg-surface-muted p-1'>
+                  {[
+                    { value: 'week', label: 'Week' },
+                    { value: 'month', label: 'Month' },
+                  ].map((item) => (
+                    <button
+                      key={item.value}
+                      type='button'
+                      onClick={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                        period === item.value
+                          ? 'bg-surface text-primary shadow-sm'
+                          : 'text-text-muted hover:text-text'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              }
+            />
+
+            <div className='mb-5 flex items-end justify-between gap-4'> 
+              <div>
+                <p className='text-3xl font-bold text-text'>
+                  {formatHours(chartTotal)}
+                  <span className='ml-1 text-base font-medium text-text-muted'>
+                    hours
+                  </span>
+                </p>
+                <p className='mt-1 text-xs text-text-muted '>
+                  Completed focus time in this period
+                </p>
+              </div>
+              {period === 'week' && weekDifference !== null && (
+                <div
+                  className={`mb-1 flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-semibold ${
+                    weekDifference >= 0
+                      ? 'bg-success-light text-success'
+                      : 'bg-accent-light text-accent'
+                  }`}
+                >
+                  {weekDifference >= 0 ? (
+                    <ArrowUpRight size={14} />
+                  ) : (
+                    <ArrowDownRight size={14} />
+                  )}
+                  {Math.abs(weekDifference)}% vs last week
+                </div>
+              )}
+            </div>
+
+            {completedSessions.length === 0 ? (
+              <EmptyState   
+                icon={TrendingUp}
+                title="Your progress starts here"
+                description="Complete a study session to see your focus time appear in this chart."
+              />
+              ) : (
+                <>
+                  <div className='flex h-48 items-end gap-2 sm:gap-3'>
+                    {chartData.map((day) => {
+                      const height = 
+                        day.seconds > 0
+                          ? Math.max((day.seconds / chartMax) * 100, 5)
+                          : 2
+
+                      return (
+                         <div 
+                          key={day.key}
+                          className='group flex h-full min-w-0 flex-1 flex-col items-center justify-end'
+                         >
+                          <div className='relative mb-2 w-full'>
+                            {day.seconds > 0 && (
+                              <div className='pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-text px-2.5 text-[11px] font-medium text-surface opacity-0 shadow-lg group-hover:opacity-100'>
+                                {day.fullLabel}: {formatDuration(day.seconds)}
+                              </div>
+                            )}
+                            <div className='flex h-36 w-full items-end  justify-center'>
+                              <div
+                                className='w-full max-w-10 rounded-t-lg bg-primary transition-all duration-300 group-hover:opacity-80'
+                                style={{
+                                  height: `${height}%`,
+                                  minHeight: '3px',
+                                  opacity: day.seconds > 0 ? 1 : 0.25,
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <span className='mt-2 text-[10px] text-text-muted sm:text-xs'>
+                            {day.label}
+                          </span>
+                         </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )
+            }
+
+          </div>
+        </section>
+      </div>
+    </main>
+  )
 }
