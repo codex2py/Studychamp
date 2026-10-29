@@ -554,10 +554,102 @@ export default function Progress() {
                       )
                     })}
                   </div>
-                </>
-              )
-            }
 
+                  <div className='mt-5 flex items-center gap-2 border-t border-border pt-4 text-xs text-text-muted'>
+                    <span className='h-2 w-2 rounded-full bg-primary' />
+                      Focus time
+                    <span className='ml-auto'>
+                      {chartData.filter((day) => day.seconds > 0).length} active days
+                    </span>
+                  </div>
+                </>
+              )}
+          </div>
+          <div className='flex flex-col rounded-2xl border border-border bg-surface p-5 sm:p-6'>
+            <SectionHeading
+              title="Daily goal"
+              description="How today's study time adds up"
+          />
+          <div className='flex flex-col items-center'>
+            {dailyGoalSeconds !== null ? (
+               <>
+              <div className='relative flex h-44 w-44 items-center justify-center'>
+                <svg>
+                  <circle 
+                    viewBox='0 0 160 160'
+                    className='abslute inset-0 h-full w-full -rotate-90'
+                    role='img'
+                    aria-label={`${Math.round(dailyGoalProgress)}% of daily goal completed`}
+                  />
+                  <circle 
+                    cx="80"
+                    cy="80"
+                    r="65"
+                    fill='none'
+                    stroke='var(--color-surface-muted)'
+                    strokeWidth="12"
+                  />
+                  <circle 
+                    cx="80"
+                    cy="80"
+                    r="65"
+                    fill='none'
+                    stroke='var(--color-accent)'
+                    strokeWidth="12"
+                    strokeLinecap='round'
+                    strokeDasharray={`${(dailyGoalProgress / 100) * 408.4} 408.4`}
+                  />
+                </svg>
+
+                <div>
+                  <p className='text-3xl font-bold text-text'>
+                    {Math.round(dailyGoalProgress)}%
+                  </p>
+                  <p className='mt-1 text-xs text-text-muted'>completed</p>
+                </div>
+              </div>
+              <p className='mt-5 text-sm text-text-secondary'>
+                <span className='font-semibold text-text'>
+                  {formatDuration(todaySeconds)}
+                </span>{' '}
+                studied of{' '}
+                <span className='font-semibold text-text'>
+                  {formatDuration(dailyGoalSeconds)}
+                </span>
+              </p>
+              <p className='mt-2 text-xs leading-5 text-text-muted'>
+                {todaySeconds >= dailyGoalSeconds
+                  ? "You've reached your daily study goal. Great work!"
+                  : `${formatDuration(dailyGoalSeconds - todaySeconds)} left to reach your goal.`}
+              </p>
+            </>
+            ) : (
+              <div className='flex max-w-xs flex-col items-center py-6 text-center'>
+                <div className='flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-light text-accent'>
+                  <Goal size={30} />
+                </div>
+                <h3 className='mt-5 font-semibold text-text'>
+                  Set a daily target
+                </h3>
+                <p className='mt-2 text-sm leading-6 text-text-muted'>
+                  Choose a daily study goal in Settings to track how close you are to reaching it.
+                </p>
+              </div>
+            )}
+          </div>
+          <div className='mt-4 rounded-xl bg-accent-light p-4'>
+            <div className='flex items-start gap-3'>
+              <Trophy size={19} className='mt-0.5 shrink-0 text-accent' />
+              <div>
+                <p className='text-sm font-semibold text-text'>
+                  Keep showing up
+                </p>
+                <p className='mt-1 text-xs leading-5 text-text-secondary'>
+                  Small, consistent study sessions can add up over time.
+                </p>
+              </div>
+            </div>
+          </div>
           </div>
         </section>
       </div>
