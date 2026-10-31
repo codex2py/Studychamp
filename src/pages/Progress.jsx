@@ -467,7 +467,8 @@ export default function Progress() {
                     <button
                       key={item.value}
                       type='button'
-                      onClick={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                      onClick={() => setPeriod(item.value)}
+                      className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
                         period === item.value
                           ? 'bg-surface text-primary shadow-sm'
                           : 'text-text-muted hover:text-text'
@@ -652,6 +653,161 @@ export default function Progress() {
           </div>
           </div>
         </section>
+
+        <section className='rounded-2xl border border-border bg-surface p-5 sm:p-6'>
+          <SectionHeading 
+            title="Study consistency"
+            description="Your last 28 days of completed study sessions"
+          />
+          {completedSessions.length === 0 ? (
+            <EmptyState 
+              icon={CalendarDays}
+              title="Your calendar is waiting"
+              description="Once you complete study sessions, this calendar will show which days you studied."
+            />
+          ) : (
+            <>
+              <div className='grid grid-cols-7 gap-2 sm:gap-3 md:grid-cols-14'>
+                {calendarData.map((day) => {
+                  const ratio = day.seconds / calendarMax
+                  const intensity = 
+                    day.seconds === 0
+                      ? 0
+                      : ratio < 0.25
+                        ? 1
+                        : ratio < 0.5
+                          ? 2
+                          : ratio < 0.75
+                            ? 3
+                            : 4
+                  return (
+                    <div
+                     key={day.key}
+                     className='group relative flex min-w-0 flex-col items-center gap-2'
+                    >
+                      <div
+                        title={`${day.date.toLocaleDateString('en', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}: ${
+                          day.seconds > 0
+                            ? formatDuration(day.seconds)
+                            : 'No completed study'
+                        }`}
+                        className={`aspect-square w-full max-w-10 rounded-lg transition ${
+                          day.key === todayKey
+                            ? 'ring-2 ring-accent ring-offset-2'
+                            : ''
+                        }`}
+                        style={{
+                          backgroundColor: intensityColors[intensity],
+                        }}
+                      />
+                      <span className='text-[10px] text-text-muted'>
+                        {day.date.getDate()}  
+                      </span>  
+                      <div className='pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-text px-3 py-2 text-xs text-surface shadow-lg group-hover:block'>
+                        {day.date.toLocaleDateString('en', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                        <br />
+                        {day.seconds > 0
+                          ? formatDuration(day.seconds)
+                          : 'No completed study'}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <div className='mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-4'>
+                <p className='text-sm text-text-secondary'>
+                  <span className='font-semibold text-text'>
+                    {calendarData.filter((day) => day.seconds > 0).length} of 28 days
+                  </span>{' '} with completed study
+                </p>
+                <div className='flex items-center gap-2'>
+                  <span className='text-xs text-text-muted'>Less</span>
+                  {intensityColors.map((color) => (
+                    <span 
+                      key={color}
+                      className='h-3 w-3 rounded-sm'
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                  <span className='text-xs text-text-muted'>More</span>
+                </div>
+              </div>
+            </>
+          )}
+        </section>
+
+        <section className='rounded-2xl border border-border bg-surface p-5 sm:p-6'>
+          <SectionHeading 
+            title="Course progress"
+            description="See how far you've progressed through your courses"
+            action={
+              <span className='rounded-lg bg-primary-light px-3 py-1.5 text-xs font-semibold text-primary'>
+                {courses.length} {courses.length === 1 ? 'course' : 'courses'}
+              </span>
+            }
+          />
+
+          {courseProgress.length === 0 ? (
+            <EmptyState 
+              icon={BookOpen}
+              title="No courses yet"
+              description="Add a course in My Courses to start tracking your learning progress here."
+            />
+          ) : (
+            <div className='space-y-5'>
+              {courseProgress.map((course, index) => (
+                <div
+                  key={course.id ?? course.name ?? index}
+                  className='space-y-3'
+                >
+                  <div className='flex items-center gap-3'>
+                    <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary'>
+                      <BookOpen size={19} />
+                    </div>
+
+                    <div className='min-w-0 flex-1'>
+                      <h3 className='truncate text-sm font-semibold text-text'>
+                        {course.name ?? 'Untitled course'}
+                      </h3>
+                      <p className='mt-1 text-xs text-text-muted'>
+                        {course.sessionCount} {' '}
+                        {course.sessionCount === 1 ? 'session' : 'sessions'}
+                        {' · '}
+                        {formatDuration(course.focusSeconds)} focused
+                      </p>
+                    </div>
+                    <span className='text-sm font-bold text-text'>
+                      [course.progressValue]%
+                    </span>
+                  </div>
+                  <div className='h-2.5 overflow-hidden rounded-full bg-surface-muted'>
+                    <div 
+                      className='h-full rounded-full bg-primary transition-all duration-500'
+                      style={{ width: `${course.progressValue}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className='mt-6 rounded-xl bg-surface-muted p-4'>
+            <div className='flex items-start gap-3'>
+              <TrendingUp size={19} className='mt-0.5 shrink-0 text-success' />
+              <p className='text-xs leading-5 text-text-secondary'>
+                Course completion is calculated from completed topics when available. Otherwise, the page uses the course's saved progress value.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        
       </div>
     </main>
   )
