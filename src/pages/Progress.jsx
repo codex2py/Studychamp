@@ -807,7 +807,11 @@ export default function Progress() {
           </div>
         </section>
 
-        
+        <footer className='pb-6 text-center'>
+          <p className='text-xs leading-5 text-text-muted'>
+            Your progress is based on data saved in this browser. Only completed sessions with valid dates are included in your statistics.
+          </p>
+        </footer>
       </div>
     </main>
   )
