@@ -395,6 +395,37 @@ export default function Settings() {
                 </p>
               )}
             </div>
+
+            <div className='flex flex-col-reverse gap-2 sm:flex-row'>
+              <button
+                type='button'
+                onClick={handleResetPreferences}
+                className='inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-secondary transition hover:bg-surface-muted hover:text-text'
+              >
+                <RotateCcw size={15} />
+                Reset defaults
+              </button>
+
+              <button
+                type='button'
+                onClick={handleSavePreferences}
+                disabled={!hasChanges}
+                className='inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50'
+              >
+                <Check size={16} />
+                Save changes
+              </button>
+            </div>
+          </div>
+
+          <div className='flex items-start gap-3 rounded-xl bg-surface-muted p-4'>
+            <MessageCircle 
+              size={18}
+              className='mt-0.5 shrink-0 text-text-secondary'
+            />
+            <p className='text-xs leading-relaxed text-text-secondary'>
+              Your StudyChamp profile and preferences are saved locally in this browser. They are not connected to an online account, so they won't automatically follow you to another device or browser.
+            </p>
           </div>
         </div>
       </div>
