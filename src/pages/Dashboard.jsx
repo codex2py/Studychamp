@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { getStorageItem, STORAGE_KEYS } from "../utils/storage";
+import {
+   getStorageItem, 
+   setStorageItem,
+   STORAGE_KEYS, 
+  } from "../utils/storage";
 import {
   Clock3,
   Target,
@@ -21,6 +25,36 @@ const SESSION_LENGTH = 25 * 60;
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+
+  function saveStudySession({
+  duration,
+  selectedCourse,
+  selectedTopic,
+  distractions,
+  selectedCourseData,
+  selectedTopicData,
+}) {
+  if (duration <= 0) return;
+
+  const savedSessions = getStorageItem(STORAGE_KEYS.sessions, []);
+  const sessions = Array.isArray(savedSessions) ? savedSessions : [];
+
+  const newSession = {
+    id: crypto.randomUUID(),
+    courseId: selectedCourse || null,
+    courseName: selectedCourseData?.name || "",
+    topicId: selectedTopic || null,
+    topicName: selectedTopicData?.name || "",
+    durationSeconds: Math.floor(duration),
+    distractionCount: distractions,
+    status: "completed",
+    completed: true,
+    completedAt: new Date().toISOString(),
+  };
+
+  setStorageItem(STORAGE_KEYS.sessions, [newSession, ...sessions]);
+}
+
 export default function Dashboard() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [savedElapsed, setSavedElapsed] = useState(0);
@@ -30,6 +64,24 @@ export default function Dashboard() {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [sessionMessage, setSessionMessage] = useState("");
+  const [courses] = useState(() => {
+    const saved = getStorageItem(STORAGE_KEYS.courses, []);
+    return Array.isArray(saved) ? saved : [];
+  });
+
+  const selectedCourseData = courses.find(
+    (course) => String(course.id) === String(selectedCourse)
+  );
+
+  const availableTopics = Array.isArray(selectedCourseData?.topics)
+    ? selectedCourseData.topics
+    : [];
+  
+  const selectedTopicData = availableTopics.find(
+    (topic) => String(topic.id) === String(selectedTopic)
+  );
+
+
 
   const today = new Date();
   const dateLabel = new Intl.DateTimeFormat("en", {
@@ -44,24 +96,44 @@ export default function Dashboard() {
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   useEffect(() => {
-    if (!isRunning || startedAt === null) return;
+  if (!isRunning || startedAt === null) return;
 
-    const interval = setInterval(() => {
-      const total = savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
+  const interval = setInterval(() => {
+    const total =
+      savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
 
-      setElapsedSeconds(total);
+    if (total >= SESSION_LENGTH) {
+      saveStudySession({
+        duration: SESSION_LENGTH,
+        selectedCourse,
+        selectedTopic,
+        distractions,
+        selectedCourseData,
+        selectedTopicData,
+      });
 
-      if (total >= SESSION_LENGTH) {
-        setElapsedSeconds(SESSION_LENGTH);
-        setSavedElapsed(SESSION_LENGTH);
-        setIsRunning(false);
-        setStartedAt(null);
-        setSessionMessage("Your 25-minute focus timer is complete!");
-      }
-    }, 250);
+      setElapsedSeconds(SESSION_LENGTH);
+      setSavedElapsed(SESSION_LENGTH);
+      setIsRunning(false);
+      setStartedAt(null);
+      setSessionMessage("Your focus session has been saved!");
+      return;
+    }
 
-    return () => clearInterval(interval);
-  }, [isRunning, startedAt, savedElapsed]);
+    setElapsedSeconds(total);
+  }, 250);
+
+  return () => clearInterval(interval);
+}, [
+  isRunning,
+  startedAt,
+  savedElapsed,
+  selectedCourse,
+  selectedTopic,
+  distractions,
+  selectedCourseData,
+  selectedTopicData,
+]);
 
   const remainingSeconds = Math.max(SESSION_LENGTH - elapsedSeconds, 0);
   const progress = Math.min((elapsedSeconds / SESSION_LENGTH) * 100, 100);
@@ -93,6 +165,7 @@ export default function Dashboard() {
     setIsRunning(false);
   }
 
+
   function finishTimer() {
     setIsRunning(false);
     setStartedAt(null);
@@ -100,7 +173,7 @@ export default function Dashboard() {
     setElapsedSeconds(0);
     setDistractions(0);
     setSessionMessage(
-      "Timer reset. Session history will be saved when storage is connected.",
+      "Timer reset. Your session wasn't saved.",
     );
   }
 
@@ -138,19 +211,6 @@ export default function Dashboard() {
       iconStyle: "bg-success-light text-success",
     },
   ];
-
-  const [courses] = useState(() => {
-    const saved = getStorageItem(STORAGE_KEYS.courses, []);
-    return Array.isArray(saved) ? saved : [];
-  });
-
-  const selectedCourseData = courses.find(
-    (course) => String(course.id) === String(selectedCourse)
-  );
-
-  const availableTopics = Array.isArray(selectedCourseData?.topics)
-    ? selectedCourseData.topics
-    : [];
 
   return (
     <main className="min-h-screen bg-background px-4 py-6 text-text sm:px-6 sm:py-8 lg:px-8">
