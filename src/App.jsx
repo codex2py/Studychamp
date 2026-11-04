@@ -11,7 +11,6 @@ import CourseDetails from './pages/CourseDetails.jsx'
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from './utils/storage'
 
 
-const STORAGE_KEY = 'studychamp:userName'
 
 export default function App() {
   const [userName, setUserName] = useState(
@@ -19,9 +18,9 @@ export default function App() {
   )
 
   function handleNameSaved(name) {
-    const saved = setStorageItem(STORAGE_KEY.userName, name)
+    const saved = setStorageItem(STORAGE_KEYS.userName, name)
 
-    if(saved) {
+    if (saved) {
       setUserName(name)
     }
   }
