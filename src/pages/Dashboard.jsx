@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getStorageItem, STORAGE_KEYS } from "../utils/storage";
 import {
   Clock3,
   Target,
@@ -138,6 +139,19 @@ export default function Dashboard() {
     },
   ];
 
+  const [courses] = useState(() => {
+    const saved = getStorageItem(STORAGE_KEYS.courses, []);
+    return Array.isArray(saved) ? saved : [];
+  });
+
+  const selectedCourseData = courses.find(
+    (course) => String(course.id) === String(selectedCourse)
+  );
+
+  const availableTopics = Array.isArray(selectedCourseData?.topics)
+    ? selectedCourseData.topics
+    : [];
+
   return (
     <main className="min-h-screen bg-background px-4 py-6 text-text sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto max-w-[1500]">
@@ -248,6 +262,11 @@ export default function Dashboard() {
                         className="w-full appearance-none rounded-xl border border-border bg-background py-3 pl-10 pr-9 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
                       >
                         <option value="">Choose a course</option>
+                        {courses.map((course) => (
+                          <option key={course.id} value={course.id}>
+                            {course.name}
+                          </option>
+                        ))}
                       </select>
 
                       <ChevronDown
@@ -269,11 +288,18 @@ export default function Dashboard() {
                         disabled={!selectedCourse}
                         className="w-full appearance-none rounded-xl border border-border bg-background px-3 py-3 pr-9 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        <option value="">
-                          {selectedCourse
+                       <option value="">
+                        {selectedCourse
+                          ? availableTopics.length > 0
                             ? "Choose a topic"
-                            : "Choose a course first"}
+                            : "No topics added yet"
+                          : "Choose a course first"}
+                       </option>
+                       {availableTopics.map((topic) => (
+                        <option key={topic.id} value={topic.id}>
+                          {topic.name}
                         </option>
+                       ))}
                       </select>
 
                       <ChevronDown
