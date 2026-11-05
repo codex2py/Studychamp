@@ -63,9 +63,26 @@ function getStartOfDay(date) {
 function getMonday(date) {
   const result = getStartOfDay(date);
   const day = result.getDay();
-
   result.setDate(result.getDate() - (day === 0 ? 6 : day - 1));
   return result;
+}
+
+function getStudyStreak(studiedDays, today) {
+  const todayKey = getDayKey(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const currentDate = studiedDays.has(todayKey)
+    ? getStartOfDay(today)
+    : getStartOfDay(yesterday);
+
+  let streak = 0;
+  while (studiedDays.has(getDayKey(currentDate))) {
+    streak += 1;
+    currentDate.setDate(currentDate.getDate() - 1);
+  }
+
+  return streak;
 }
 
 function formatDuration(seconds) {
@@ -253,6 +270,7 @@ export default function Progress() {
   const studiedDays = new Set(
     completedSessions.map((session) => getDayKey(session.dateObject)),
   );
+  const studyStreak = getStudyStreak(studiedDays, now);
 
   const todaySeconds = completedSessions
     .filter((session) => getDayKey(session.dateObject) === todayKey)
@@ -443,9 +461,9 @@ export default function Progress() {
           />
           <StatCard
             icon={Flame}
-            label="Study days"
-            value={studiedDays.size}
-            detail="Different days with completed sessions "
+            label="Study streak"
+            value={`${studyStreak} ${studyStreak === 1 ? "day" : "days"}`}
+            detail="Consecutive days with completed sessions"
             color="var(--color-accent)"
             background="var(--color-accent-light)"
           />
