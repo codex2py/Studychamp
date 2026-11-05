@@ -280,36 +280,53 @@ export default function Progress() {
         )
       : null;
 
-  const chartDays = period === "week" ? 7 : 30;
   const chartData = [];
+  if (period === "week") {
+    for (let index = 0; index < 7; index += 1) {
+      const date = new Date(weekStart);
+      date.setDate(date.getDate() + index);
+      const key = getDayKey(date);
+      const seconds = completedSessions
+        .filter((session) => getDayKey(session.dateObject) === key)
+        .reduce((total, session) => total + session.durationSeconds, 0);
 
-  for (let index = chartDays - 1; index >= 0; index -= 1) {
-    const date = getStartOfDay(now);
-    date.setDate(date.getDate() - index);
+      chartData.push({
+        key,
+        seconds,
+        label: date.toLocaleDateString("en", { weekday: "short" }),
+        fullLabel: date.toLocaleDateString("en", {
+          month: "short",
+          day: "numeric",
+        }),
+      });
+    }
+  } else {
+    for (let index = 29; index >= 0; index -= 1) {
+      const date = getStartOfDay(now);
+      date.setDate(date.getDate() - index);
+      const key = getDayKey(date);
+      const seconds = completedSessions
+        .filter((session) => getDayKey(session.dateObject) === key)
+        .reduce((total, session) => total + session.durationSeconds, 0);
 
-    const key = getDayKey(date);
-    const seconds = completedSessions
-      .filter((session) => getDayKey(session.dateObject) === key)
-      .reduce((total, session) => total + session.durationSeconds, 0);
-
-    chartData.push({
-      key,
-      seconds,
-      label:
-        period === "week"
-          ? date.toLocaleDateString("en", { weekday: "short" })
-          : String(date.getDate()),
-      fullLabel: date.toLocaleDateString("en", {
-        month: "short",
-        day: "numeric",
-      }),
-    });
+      chartData.push({
+        key,
+        seconds,
+        label: String(date.getDate()),
+        fullLabel: date.toLocaleDateString("en", {
+          month: "short",
+          day: "numeric",
+        }),
+      });
+    }
   }
 
-  const chartTotal = chartData.reduce((total, day) => total + day.seconds, 0);
+  const chartTotal = chartData.reduce(
+    (total, day) => total + day.seconds,
+    0,
+  );
 
   const chartMax = Math.max(3600, ...chartData.map((day) => day.seconds));
-
   const calendarData = [];
 
   for (let index = 27; index >= 0; index -= 1) {
@@ -573,12 +590,6 @@ export default function Progress() {
                       className="absolute inset-0 h-full w-full -rotate-90"
                       aria-hidden="true"
                     >
-                      <circle
-                        viewBox="0 0 160 160"
-                        className="abslute inset-0 h-full w-full -rotate-90"
-                        role="img"
-                        aria-label={`${Math.round(dailyGoalProgress)}% of daily goal completed`}
-                      />
                       <circle
                         cx="80"
                         cy="80"
