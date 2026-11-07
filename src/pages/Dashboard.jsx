@@ -55,6 +55,93 @@ const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   setStorageItem(STORAGE_KEYS.sessions, [newSession, ...sessions]);
 }
 
+function getDuration(session) {
+  const value =
+    session.durationSeconds ??
+    session.elapsedSeconds ??
+    session.elapsedTime ??
+    session.duration ??
+    0;
+
+  const seconds = Number(value);
+  return Number.isFinite(seconds) && seconds > 0 ? seconds : 0;
+}
+
+function getSessionDate(session) {
+  const value =
+    session.completedAt ??
+    session.endedAt ??
+    session.date ??
+    session.startedAt ??
+    session.createdAt;
+  if (!value) return null;
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function isCompleted(session) {
+  if (typeof session.isCompleted === "boolean") return session.isCompleted;
+  if (typeof session.completed === "boolean") return session.completed;
+  return Boolean(session.completedAt || session.endedAt);
+}
+
+function getDayKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getStartOfDay(date) {
+  const result = new Date(date);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
+function getStudyStreak(studiedDays, today) {
+  const todayKey = getDayKey(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const currentDate = studiedDays.has(todayKey)
+    ? getStartOfDay(today)
+    : getStartOfDay(yesterday);
+
+  let streak = 0;
+  while (studiedDays.has(getDayKey(currentDate))) {
+    streak += 1;
+    currentDate.setDate(currentDate.getDate() - 1);
+  }
+  return streak;
+}
+
+function formatDuration(seconds) {
+  const safeSeconds = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(safeSeconds / 3600);
+  const minutes = Math.floor((safeSeconds % 3600) / 60);
+
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+  return `${minutes}m`;
+}
+
+function getDailyGoal(preferences) {
+  const values = [
+    preferences?.dailyGoalHours,
+    preferences?.dailyStudyGoal,
+    preferences?.studyGoalHours,
+  ];
+  for (const value of values) {
+    if (value === undefined || value === null || value === "") continue;
+
+    const goal = Number(value);
+    if (Number.isFinite(goal) && goal > 0) return goal * 3600;
+  }
+  return null;
+}
 export default function Dashboard() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [savedElapsed, setSavedElapsed] = useState(0);
@@ -64,10 +151,50 @@ export default function Dashboard() {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
   const [sessionMessage, setSessionMessage] = useState("");
-  const [courses] = useState(() => {
-    const saved = getStorageItem(STORAGE_KEYS.courses, []);
-    return Array.isArray(saved) ? saved : [];
-  });
+  const [courses, setCourses] = useState(() => {
+  const saved = getStorageItem(STORAGE_KEYS.courses, []);
+  return Array.isArray(saved) ? saved : [];
+});
+
+const [sessions, setSessions] = useState(() => {
+  const saved = getStorageItem(STORAGE_KEYS.sessions, []);
+  return Array.isArray(saved) ? saved : [];
+});
+
+const [preferences, setPreferences] = useState(
+  () => getStorageItem(STORAGE_KEYS.preferences, {}) ?? {},
+);
+
+useEffect(() => {
+  function refreshData() {
+    const savedSessions = getStorageItem(STORAGE_KEYS.sessions, []);
+    const savedCourses = getStorageItem(STORAGE_KEYS.courses, []);
+    const savedPreferences = getStorageItem(STORAGE_KEYS.preferences, {});
+
+    setSessions(Array.isArray(savedSessions) ? savedSessions : []);
+    setCourses(Array.isArray(savedCourses) ? savedCourses : []);
+    setPreferences(savedPreferences ?? {});
+  }
+
+  function handleStorage(event) {
+    if (
+      event.key === null ||
+      event.key === STORAGE_KEYS.sessions ||
+      event.key === STORAGE_KEYS.courses ||
+      event.key === STORAGE_KEYS.preferences
+    ) {
+      refreshData();
+    }
+  }
+
+  window.addEventListener("focus", refreshData);
+  window.addEventListener("storage", handleStorage);
+
+  return () => {
+    window.removeEventListener("focus", refreshData);
+    window.removeEventListener("storage", handleStorage);
+  };
+}, []);
 
   const selectedCourseData = courses.find(
     (course) => String(course.id) === String(selectedCourse)
@@ -94,6 +221,28 @@ export default function Dashboard() {
   const hour = today.getHours();
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
+  const todayKey = getDayKey(today);
+  const completedSessions = sessions
+    .filter((session) => session && typeof session === "object")
+    .map((session) => ({
+      date: getSessionDate(session),
+      duration: getDuration(session),
+      completed: isCompleted(session),
+    }))
+    .filter((session) => session.date !== null && session.completed);
+
+  const todaySeconds = completedSessions
+    .filter((session) => getDayKey(session.date) === todayKey)
+    .reduce((total, session) => total + session.duration, 0);
+
+  const studiedDays = new Set(
+    completedSessions.map((session) => getDayKey(session.date)),
+  );
+
+  const studyStreak = getStudyStreak(studiedDays, today);
+  const dailyGoalSeconds = getDailyGoal(preferences);
+
 
   useEffect(() => {
   if (!isRunning || startedAt === null) return;
@@ -191,24 +340,30 @@ export default function Dashboard() {
   const stats = [
     {
       label: "Focus time today",
-      value: "—",
-      note: "Connect session history to track this",
+      value: formatDuration(todaySeconds),
+      note: "From your completed study sessions",
       icon: Clock3,
-      iconStyle: "bg-primary-light text-primary",
+      iconStyle: "bg-primary-light text-primary"
     },
     {
       label: "Daily goal",
-      value: "—",
-      note: "Set your goal in Settings",
+      value: 
+        dailyGoalSeconds !== null
+          ? formatDuration(dailyGoalSeconds)
+          : "Not set",
+      note:
+        dailyGoalSeconds !== null
+          ? `${formatDuration(todaySeconds)} studied today`
+          : "Set your goal in Settings",
       icon: Target,
-      iconStyle: "bg-accent-light text-accent",
+      iconStyle: "bg-accent-light text-accent"
     },
     {
       label: "Study streak",
-      value: "—",
-      note: "Your streak starts with saved sessions",
+      value: `${studyStreak} ${studyStreak === 1 ? "day" : "days"}`,
+      note: "Consecutive days with completed sessions",
       icon: Flame,
-      iconStyle: "bg-success-light text-success",
+      iconStyle: "bg-success-light text-success"
     },
   ];
 
