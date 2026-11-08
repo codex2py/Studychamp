@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-   getStorageItem, 
-   setStorageItem,
-   STORAGE_KEYS, 
-  } from "../utils/storage";
+import { getStorageItem, setStorageItem, STORAGE_KEYS } from "../utils/storage";
 import {
   Clock3,
   Target,
@@ -25,8 +21,7 @@ const SESSION_LENGTH = 25 * 60;
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-
-  function saveStudySession({
+function saveStudySession({
   duration,
   selectedCourse,
   selectedTopic,
@@ -152,63 +147,61 @@ export default function Dashboard() {
   const [selectedTopic, setSelectedTopic] = useState("");
   const [sessionMessage, setSessionMessage] = useState("");
   const [courses, setCourses] = useState(() => {
-  const saved = getStorageItem(STORAGE_KEYS.courses, []);
-  return Array.isArray(saved) ? saved : [];
-});
+    const saved = getStorageItem(STORAGE_KEYS.courses, []);
+    return Array.isArray(saved) ? saved : [];
+  });
 
-const [sessions, setSessions] = useState(() => {
-  const saved = getStorageItem(STORAGE_KEYS.sessions, []);
-  return Array.isArray(saved) ? saved : [];
-});
+  const [sessions, setSessions] = useState(() => {
+    const saved = getStorageItem(STORAGE_KEYS.sessions, []);
+    return Array.isArray(saved) ? saved : [];
+  });
 
-const [preferences, setPreferences] = useState(
-  () => getStorageItem(STORAGE_KEYS.preferences, {}) ?? {},
-);
+  const [preferences, setPreferences] = useState(
+    () => getStorageItem(STORAGE_KEYS.preferences, {}) ?? {},
+  );
 
-useEffect(() => {
-  function refreshData() {
-    const savedSessions = getStorageItem(STORAGE_KEYS.sessions, []);
-    const savedCourses = getStorageItem(STORAGE_KEYS.courses, []);
-    const savedPreferences = getStorageItem(STORAGE_KEYS.preferences, {});
+  useEffect(() => {
+    function refreshData() {
+      const savedSessions = getStorageItem(STORAGE_KEYS.sessions, []);
+      const savedCourses = getStorageItem(STORAGE_KEYS.courses, []);
+      const savedPreferences = getStorageItem(STORAGE_KEYS.preferences, {});
 
-    setSessions(Array.isArray(savedSessions) ? savedSessions : []);
-    setCourses(Array.isArray(savedCourses) ? savedCourses : []);
-    setPreferences(savedPreferences ?? {});
-  }
-
-  function handleStorage(event) {
-    if (
-      event.key === null ||
-      event.key === STORAGE_KEYS.sessions ||
-      event.key === STORAGE_KEYS.courses ||
-      event.key === STORAGE_KEYS.preferences
-    ) {
-      refreshData();
+      setSessions(Array.isArray(savedSessions) ? savedSessions : []);
+      setCourses(Array.isArray(savedCourses) ? savedCourses : []);
+      setPreferences(savedPreferences ?? {});
     }
-  }
 
-  window.addEventListener("focus", refreshData);
-  window.addEventListener("storage", handleStorage);
+    function handleStorage(event) {
+      if (
+        event.key === null ||
+        event.key === STORAGE_KEYS.sessions ||
+        event.key === STORAGE_KEYS.courses ||
+        event.key === STORAGE_KEYS.preferences
+      ) {
+        refreshData();
+      }
+    }
 
-  return () => {
-    window.removeEventListener("focus", refreshData);
-    window.removeEventListener("storage", handleStorage);
-  };
-}, []);
+    window.addEventListener("focus", refreshData);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("focus", refreshData);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   const selectedCourseData = courses.find(
-    (course) => String(course.id) === String(selectedCourse)
+    (course) => String(course.id) === String(selectedCourse),
   );
 
   const availableTopics = Array.isArray(selectedCourseData?.topics)
     ? selectedCourseData.topics
     : [];
-  
+
   const selectedTopicData = availableTopics.find(
-    (topic) => String(topic.id) === String(selectedTopic)
+    (topic) => String(topic.id) === String(selectedTopic),
   );
-
-
 
   const today = new Date();
   const dateLabel = new Intl.DateTimeFormat("en", {
@@ -243,46 +236,44 @@ useEffect(() => {
   const studyStreak = getStudyStreak(studiedDays, today);
   const dailyGoalSeconds = getDailyGoal(preferences);
 
-
   useEffect(() => {
-  if (!isRunning || startedAt === null) return;
+    if (!isRunning || startedAt === null) return;
 
-  const interval = setInterval(() => {
-    const total =
-      savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
+    const interval = setInterval(() => {
+      const total = savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
 
-    if (total >= SESSION_LENGTH) {
-      saveStudySession({
-        duration: SESSION_LENGTH,
-        selectedCourse,
-        selectedTopic,
-        distractions,
-        selectedCourseData,
-        selectedTopicData,
-      });
+      if (total >= SESSION_LENGTH) {
+        saveStudySession({
+          duration: SESSION_LENGTH,
+          selectedCourse,
+          selectedTopic,
+          distractions,
+          selectedCourseData,
+          selectedTopicData,
+        });
 
-      setElapsedSeconds(SESSION_LENGTH);
-      setSavedElapsed(SESSION_LENGTH);
-      setIsRunning(false);
-      setStartedAt(null);
-      setSessionMessage("Your focus session has been saved!");
-      return;
-    }
+        setElapsedSeconds(SESSION_LENGTH);
+        setSavedElapsed(SESSION_LENGTH);
+        setIsRunning(false);
+        setStartedAt(null);
+        setSessionMessage("Your focus session has been saved!");
+        return;
+      }
 
-    setElapsedSeconds(total);
-  }, 250);
+      setElapsedSeconds(total);
+    }, 250);
 
-  return () => clearInterval(interval);
-}, [
-  isRunning,
-  startedAt,
-  savedElapsed,
-  selectedCourse,
-  selectedTopic,
-  distractions,
-  selectedCourseData,
-  selectedTopicData,
-]);
+    return () => clearInterval(interval);
+  }, [
+    isRunning,
+    startedAt,
+    savedElapsed,
+    selectedCourse,
+    selectedTopic,
+    distractions,
+    selectedCourseData,
+    selectedTopicData,
+  ]);
 
   const remainingSeconds = Math.max(SESSION_LENGTH - elapsedSeconds, 0);
   const progress = Math.min((elapsedSeconds / SESSION_LENGTH) * 100, 100);
@@ -314,16 +305,13 @@ useEffect(() => {
     setIsRunning(false);
   }
 
-
   function finishTimer() {
     setIsRunning(false);
     setStartedAt(null);
     setSavedElapsed(0);
     setElapsedSeconds(0);
     setDistractions(0);
-    setSessionMessage(
-      "Timer reset. Your session wasn't saved.",
-    );
+    setSessionMessage("Timer reset. Your session wasn't saved.");
   }
 
   function logDistraction() {
@@ -343,11 +331,11 @@ useEffect(() => {
       value: formatDuration(todaySeconds),
       note: "From your completed study sessions",
       icon: Clock3,
-      iconStyle: "bg-primary-light text-primary"
+      iconStyle: "bg-primary-light text-primary",
     },
     {
       label: "Daily goal",
-      value: 
+      value:
         dailyGoalSeconds !== null
           ? formatDuration(dailyGoalSeconds)
           : "Not set",
@@ -356,14 +344,14 @@ useEffect(() => {
           ? `${formatDuration(todaySeconds)} studied today`
           : "Set your goal in Settings",
       icon: Target,
-      iconStyle: "bg-accent-light text-accent"
+      iconStyle: "bg-accent-light text-accent",
     },
     {
       label: "Study streak",
       value: `${studyStreak} ${studyStreak === 1 ? "day" : "days"}`,
       note: "Consecutive days with completed sessions",
       icon: Flame,
-      iconStyle: "bg-success-light text-success"
+      iconStyle: "bg-success-light text-success",
     },
   ];
 
@@ -503,18 +491,18 @@ useEffect(() => {
                         disabled={!selectedCourse}
                         className="w-full appearance-none rounded-xl border border-border bg-background px-3 py-3 pr-9 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                       <option value="">
-                        {selectedCourse
-                          ? availableTopics.length > 0
-                            ? "Choose a topic"
-                            : "No topics added yet"
-                          : "Choose a course first"}
-                       </option>
-                       {availableTopics.map((topic) => (
-                        <option key={topic.id} value={topic.id}>
-                          {topic.name}
+                        <option value="">
+                          {selectedCourse
+                            ? availableTopics.length > 0
+                              ? "Choose a topic"
+                              : "No topics added yet"
+                            : "Choose a course first"}
                         </option>
-                       ))}
+                        {availableTopics.map((topic) => (
+                          <option key={topic.id} value={topic.id}>
+                            {topic.name}
+                          </option>
+                        ))}
                       </select>
 
                       <ChevronDown
@@ -625,7 +613,7 @@ useEffect(() => {
                 <div>
                   <h2 className="text-lg font-bold">Your courses</h2>
                   <p className="mt-1 text-sm text-text-secondary">
-                    Keep track of what you're learning.
+                    Keep track of what you're learning
                   </p>
                 </div>
                 <a
@@ -635,26 +623,76 @@ useEffect(() => {
                   View all
                 </a>
               </div>
-              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border-strong px-5 py-9 text-center">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
-                  <BookOpen size={23} />
-                </div>
-                <h3 className="text-sm font-semibold">
-                  Your learning journey starts here
-                </h3>
-                <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary">
-                  Add your courses and topics to see your learning progress
-                  here.
-                </p>
 
-                <a
-                  href="/courses"
-                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover"
-                >
-                  <Plus size={16} />
-                  Explore courses
-                </a>
-              </div>
+              {courses.length === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border-strong px-5 py-9 text-center">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
+                    <BookOpen size={23} />
+                  </div>
+                  <h3 className="text-sm font-semibold">
+                    Your learning journey starts here
+                  </h3>
+                  <p className="mt-2 max-w-sm leading-6 text-text-secondary">
+                    Add your courses and topics to see your learning progres
+                    here.
+                  </p>
+                  <a
+                    href="/courses"
+                    className="mt-5 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                  >
+                    <Plus size={16} />
+                    Explore courses
+                  </a>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {courses.slice(0, 4).map((course) => {
+                    const topics = Array.isArray(course.topics)
+                      ? course.topics
+                      : [];
+                    const completedTopics = topics.filter(
+                      (topic) =>
+                        topic.completed === true ||
+                        topic.isCompleted === true ||
+                        topic.status === "completed",
+                    ).length;
+
+                    const progressValue =
+                      topics.length > 0
+                        ? Math.round((completedTopics / topics.length) * 100)
+                        : Number(course.progress) || 0;
+
+                    return (
+                      <div key={course.id} className="space-y-5">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+                            <BookOpen size={19} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="truncate text-sm font-semibold">
+                              {course.name || "Untitled course"}
+                            </h3>
+                            <p>
+                              {topics.length > 0
+                                ? `${completedTopics} of ${topics.length} topics completed`
+                                : "No topics added yet"}
+                            </p>
+                          </div>
+                          <span className="text-sm font-bold text-text">
+                            {progressValue}%
+                          </span>
+                        </div>
+                        <div className="h-2.5 overflow-hidden rounded-full bg-surface-muted">
+                          <div
+                            className="h-full bg-primary rounded-full transition-all duration-500"
+                            style={{ width: `${progressValue}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </section>
           </div>
 
