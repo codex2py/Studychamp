@@ -290,7 +290,7 @@ export default function Dashboard() {
       const total = savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
 
       if (total >= SESSION_LENGTH) {
-        saveStudySession({
+        const newSession = saveStudySession({
           duration: SESSION_LENGTH,
           selectedCourse,
           selectedTopic,
@@ -298,6 +298,13 @@ export default function Dashboard() {
           selectedCourseData,
           selectedTopicData,
         });
+
+        if (newSession) {
+          setSessions((previousSessions) => [
+            newSession,
+            ...previousSessions,
+          ]);
+        }
 
         setElapsedSeconds(SESSION_LENGTH);
         setSavedElapsed(SESSION_LENGTH);
