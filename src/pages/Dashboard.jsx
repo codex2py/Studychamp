@@ -236,6 +236,39 @@ export default function Dashboard() {
   const studyStreak = getStudyStreak(studiedDays, today);
   const dailyGoalSeconds = getDailyGoal(preferences);
 
+  const weekStart = getStartOfDay(today);
+
+  weekStart.setDate(
+    weekStart.getDate() -((weekStart.getDay() + 6) % 7)
+  );
+
+  const weeklyData = WEEKDAYS.map((day, index) => {
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + index);
+
+    const dayKey = getDayKey(date);
+    const seconds = completedSessions
+      .filter((session) => getDayKey(session.date) === dayKey)
+      .reduce((total, session) => total + session.duration, 0);
+
+    return {
+      day, 
+      date, 
+      seconds, 
+      isToday: dayKey === todayKey,
+    };
+  });
+
+  const totalWeekSeconds = weeklyData.reduce(
+    (total, day) => total + day.seconds,
+    0
+  );
+
+  const maxWeeklySeconds = Math.max(
+    ...weeklyData.map((day) => day.seconds),
+    1
+  );
+
   useEffect(() => {
     if (!isRunning || startedAt === null) return;
 
@@ -709,26 +742,71 @@ export default function Dashboard() {
                   <TrendingUp size={20} />
                 </div>
               </div>
-              <div className="mt-7 flex-h-36 items-end justify-between gap-2">
-                {WEEKDAYS.map((day) => (
-                  <div
-                    key={day}
-                    className="flex h-full flex-1 flex-col items-center justify-end gap-2"
-                  >
-                    <div className="flex h-full w-full items-end justify-center">
-                      <div className="h-1 w-full max-w-8 rounded-t-md bg-surface-muted" />
-                    </div>
-                    <span className="text-[11px] text-text-secondary">
-                      {day}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-5 rounded-xl bg-background p-4 text-center">
-                <p className="text-sm font-semibold">Your chart starts here</p>
-                <p className="mt-1 text-xs leading-5 text-text-secondary">
-                  Complete and save study sessions to see your weekly totals.
+              <div className="mt-5">
+                <p className="text-2xl font-bold">{formatDuration(totalWeekSeconds)}</p>
+                <p className="mt-1 text-xs text-text-secondary">
+                  Total focus time this week
                 </p>
+              </div>
+
+              <div className="mt-7 flex h-36 items-end justify-between gap-2">
+                {weeklyData.map((day) => {
+                  const barHeight = 
+                    day.seconds > 0
+                      ? Math.max((day.seconds / maxWeeklySeconds) * 100, 6)
+                      : 0;
+
+                  return (
+                    <div
+                      key={day.day}
+                      className="flex h-full flex-1 flex-col items-center justify-end gap-2"
+                    >
+                      <div 
+                        className="flex h-full w-full items-end justify-center"
+                        title={`${day.day}: ${formatDuration(day.seconds)}`}
+                      >
+                        <div 
+                          className={`w-full max-w-8 rounded-t-md transition-all duration-500 ${
+                            day.isToday ? "bg-primary" : "bg-success"
+                          }`}
+                          style={{ height: `${barHeight}%`}}
+                        />
+                      </div>
+
+                      <span
+                        className={`text-[11px] ${
+                          day.isToday
+                            ? "font-bold text-primary"
+                            : "text-text-secondary"
+                        }`}
+                      >
+                        {day.day}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="mt-5 rounded-xl bg-background p-4 text-center">
+                {totalWeekSeconds > 0 ? (
+                  <>
+                    <p className="text-sm font-semibold"> 
+                      You're making progress!
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-text-secondary">
+                      Every focused session adds up. Keep going!
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm font-semibold">
+                      Your chart starts here
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-text-secondary">
+                      Complete and save study sessions to see your weekly totals.
+                    </p>
+                  </>
+                )}
               </div>
             </section>
 
