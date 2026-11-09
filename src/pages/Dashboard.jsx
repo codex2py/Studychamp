@@ -360,6 +360,7 @@ const todaySessions = sessions.filter((session) => {
     distractions,
     selectedCourseData,
     selectedTopicData,
+    sessionLength
   ]);
 
   const remainingSeconds = Math.max(sessionLength - elapsedSeconds, 0);
@@ -682,7 +683,7 @@ const todaySessions = sessions.filter((session) => {
                   </div>
 
                   <p className="mt-4 text-center text-xs text-text-secondary">
-                    25-minute focus session
+                    {sessionLength / 60}-minute focus session
                   </p>
                 </div>
 
@@ -900,8 +901,7 @@ const todaySessions = sessions.filter((session) => {
                     You've got this.
                   </h2>
                   <p>
-                    You don't have to finish everything today. Just give the 25
-                    minutes your best.
+                    You don't have to finish everything today. Just give your focus session your best.
                   </p>
                 </div>
                 <ChampMascot />
