@@ -236,6 +236,18 @@ export default function Dashboard() {
   const studyStreak = getStudyStreak(studiedDays, today);
   const dailyGoalSeconds = getDailyGoal(preferences);
 
+  const goalProgress =
+    dailyGoalSeconds !== null
+      ? Math.min((todaySeconds / dailyGoalSeconds) * 100, 100)
+      : 0;
+
+  const remainingGoalSeconds = 
+    dailyGoalSeconds !== null
+      ? Math.max(dailyGoalSeconds - todaySeconds, 0)
+      : 0;
+
+  const goalReached = 
+    dailyGoalSeconds !== null && todaySeconds >= dailyGoalSeconds
   const weekStart = getStartOfDay(today);
 
   weekStart.setDate(
@@ -372,9 +384,11 @@ export default function Dashboard() {
         dailyGoalSeconds !== null
           ? formatDuration(dailyGoalSeconds)
           : "Not set",
-      note:
-        dailyGoalSeconds !== null
-          ? `${formatDuration(todaySeconds)} studied today`
+      note: 
+        dailyGoalSeconds !== null 
+          ? goalReached
+            ? "Daily goal completed!"
+            : `${Math.round(goalProgress)}% completed`
           : "Set your goal in Settings",
       icon: Target,
       iconStyle: "bg-accent-light text-accent",
@@ -440,9 +454,30 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <p className="mt-4 text-xs leading-5 text-text-seconday">
+              <p className="mt-4 text-xs leading-5 text-text-secondary">
                 {note}
               </p>
+
+              {label === "Daily goal" && dailyGoalSeconds !== null && (
+                <div className="mt-3">
+                  <div className="mb-2 flex items-center justify-between text-xs">
+                    <span className="text-text-secondary">
+                      {goalReached 
+                        ? "Goal reached"
+                        : `${formatDuration(remainingGoalSeconds)} left`}
+                    </span>
+                    <span className="font-semibold text-text">
+                      {Math.round(goalProgress)}%
+                    </span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-surface-muted">
+                    <div 
+                      className="h-full rounded-full bg-accent transition-all duration-500"
+                      style={{ width: `${goalProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </article>
           ))}
         </section>
