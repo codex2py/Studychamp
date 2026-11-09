@@ -249,7 +249,39 @@ export default function Dashboard() {
       : 0;
 
   const goalReached = 
-    dailyGoalSeconds !== null && todaySeconds >= dailyGoalSeconds
+    dailyGoalSeconds !== null && todaySeconds >= dailyGoalSeconds;
+
+const todaySessions = sessions.filter((session) => {
+  if (!session || typeof session !== "object") return false;
+
+  const sessionDate = getSessionDate(session);
+
+  return (
+    sessionDate &&
+    getDayKey(sessionDate) === todayKey &&
+    isCompleted(session)
+  );
+});
+
+  const latestTodaySession = todaySessions[0];
+
+  const tinyGoal = goalReached
+    ? {
+      title: "You've reached today's goal!",
+      message: "Amazing work. Take a proper break and celebrate the progress you've made.",
+    }
+    : todaySeconds > 0
+      ? {
+        title: "Keep your momentum going",
+        message: latestTodaySession.topicName
+          ? `You've been studying ${latestTodaySession.topicName}. Consider reviewing it once more before moving on.`
+          : "You've already put in some focus time today. Choose one more topic and give it your attention.",
+      }
+      : {
+        title: "Start with one small win",
+        message: "Pick one topic, put your phone away, and focus for your time. Starting is already progress."
+    };
+
   const weekStart = getStartOfDay(today);
 
   weekStart.setDate(
@@ -885,10 +917,9 @@ export default function Dashboard() {
                   <Target size={19} />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold">Today's tiny goal</h2>
+                  <h2 className="text-sm font-bold">{tinyGoal.title}</h2>
                   <p className="mt-2 text-sm leading-6 text-text-secondary">
-                    Pick one topic, put your phone away, and focus till the
-                    timer ends. Starting is already progress.
+                    {tinyGoal.message}
                   </p>
                 </div>
               </div>
