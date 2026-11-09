@@ -48,6 +48,8 @@ function saveStudySession({
   };
 
   setStorageItem(STORAGE_KEYS.sessions, [newSession, ...sessions]);
+
+  return newSession;
 }
 
 function getDuration(session) {
