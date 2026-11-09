@@ -17,8 +17,6 @@ import {
   RotateCcw,
 } from "lucide-react";
 
-const SESSION_LENGTH = 25 * 60;
-
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function saveStudySession({
@@ -161,6 +159,9 @@ export default function Dashboard() {
   const [preferences, setPreferences] = useState(
     () => getStorageItem(STORAGE_KEYS.preferences, {}) ?? {},
   );
+
+  const sessionLength =
+    (Number(preferences.focusDuration) || 25) * 60;
 
   useEffect(() => {
     function refreshData() {
@@ -321,9 +322,9 @@ const todaySessions = sessions.filter((session) => {
     const interval = setInterval(() => {
       const total = savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
 
-      if (total >= SESSION_LENGTH) {
+      if (total >= sessionLength) {
         const newSession = saveStudySession({
-          duration: SESSION_LENGTH,
+          duration: sessionLength,
           selectedCourse,
           selectedTopic,
           distractions,
@@ -338,8 +339,8 @@ const todaySessions = sessions.filter((session) => {
           ]);
         }
 
-        setElapsedSeconds(SESSION_LENGTH);
-        setSavedElapsed(SESSION_LENGTH);
+        setElapsedSeconds(sessionLength);
+        setSavedElapsed(sessionLength);
         setIsRunning(false);
         setStartedAt(null);
         setSessionMessage("Your focus session has been saved!");
@@ -361,8 +362,8 @@ const todaySessions = sessions.filter((session) => {
     selectedTopicData,
   ]);
 
-  const remainingSeconds = Math.max(SESSION_LENGTH - elapsedSeconds, 0);
-  const progress = Math.min((elapsedSeconds / SESSION_LENGTH) * 100, 100);
+  const remainingSeconds = Math.max(sessionLength - elapsedSeconds, 0);
+  const progress = Math.min((elapsedSeconds / sessionLength) * 100, 100);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -383,8 +384,8 @@ const todaySessions = sessions.filter((session) => {
     if (startedAt !== null) {
       const total = savedElapsed + Math.floor((Date.now() - startedAt) / 1000);
 
-      setElapsedSeconds(Math.min(total, SESSION_LENGTH));
-      setSavedElapsed(Math.min(total, SESSION_LENGTH));
+      setElapsedSeconds(Math.min(total, sessionLength));
+      setSavedElapsed(Math.min(total, sessionLength));
     }
 
     setStartedAt(null);
