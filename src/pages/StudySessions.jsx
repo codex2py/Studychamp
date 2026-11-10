@@ -136,10 +136,13 @@ function StudySessions() {
         const date = getSessionDate(session);
 
         const isCompleted = 
-          session.status === "completed" ||
-          session.status === "finished" || 
-          session.completed === true ||
-          Boolean(session.completedAt || session.endedAt);
+          typeof session.isCompleted === "boolean"
+            ? session.isCompleted
+            : typeof session.completed === "boolean"
+              ? session.completed
+              : session.status === "completed" ||
+                session.status === "finished" ||
+                Boolean(session.completedAt || session.endedAt);
 
         
         return {
