@@ -448,7 +448,7 @@ const todaySessions = sessions.filter((session) => {
 
   return (
     <main className="min-h-screen bg-background px-4 py-6 text-text sm:px-6 sm:py-8 lg:px-8">
-      <div className="mx-auto max-w-[1500]">
+      <div className="mx-auto max-w-375">
         <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
             <p className="mb-2 text-sm font-medium text-text-secondary">
@@ -530,7 +530,7 @@ const todaySessions = sessions.filter((session) => {
           <div className="min-w-0 space-y-6">
             <section
               id="focus-space"
-              className="scroll-mt-6 overflow-hidden rounded-2-xl border border-border bg-surface shadow-sm"
+              className="scroll-mt-6 overflow-hidden rounded-2xl border border-border bg-surface shadow-sm"
             >
               <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-5 py-5 sm:px-6">
                 <div>
@@ -894,10 +894,10 @@ const todaySessions = sessions.filter((session) => {
             </section>
 
             <section className="relative overflow-hidden rounded-2xl bg-accent-light p-5 sm:p-6">
-              <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full border-[18] border-white/30" />
-              <div className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full border-[16] border-white/30" />
+              <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full border-18 border-white/30" />
+              <div className="pointer-events-none absolute -bottom-12 -left-8 h-28 w-28 rounded-full border-16 border-white/30" />
               <div className="relative flex items-start justify-between gap-3">
-                <div className="max-w-[230]">
+                <div className="max-w-57.5">
                   <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-xs font-semibold text-text">
                     <Sparkles size={14} className="text-accent" />A little
                     reminder
