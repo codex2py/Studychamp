@@ -30,7 +30,12 @@ function CourseDetails() {
 
   const topics = Array.isArray(course?.topics) ? course.topics : [];
 
-  const completedCount = topics.filter((topic) => topic.completed).length;
+  const completedCount = topics.filter(
+    (topic) =>
+      topic.completed === true ||
+      topic.isCompleted === true ||
+      topic.status === "completed",
+  ).length;
 
   const progress =
     topics.length > 0 ? Math.round((completedCount / topics.length) * 100) : 0;
@@ -49,11 +54,16 @@ function CourseDetails() {
               progress:
                 updatedTopics.length > 0
                   ? Math.round(
-                      (updatedTopics.filter((topic) => topic.completed).length /
-                        updatedTopics.length) *
-                        100,
-                    )
-                  : 0,
+                    (updatedTopics.filter(
+                      (topic) =>
+                        topic.completed === true ||
+                        topic.isCompleted === true ||
+                        topic.status === "completed"
+                    ).length /
+                      updatedTopics.length) *
+                      100,
+                  )
+                : 0,
             }
           : item,
       ),
