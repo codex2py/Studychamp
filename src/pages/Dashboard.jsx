@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from "../utils/storage";
 import {
   Clock3,
@@ -774,7 +775,11 @@ const todaySessions = sessions.filter((session) => {
                         : Number(course.progress) || 0;
 
                     return (
-                      <div key={course.id} className="space-y-5">
+                      <Link
+                       key={course.id} 
+                       to={`/courses/${course.id}`}
+                       className="block space-y-5 rounded-xl transition hover:bg-background"
+                       >
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
                             <BookOpen size={19} />
@@ -799,7 +804,7 @@ const todaySessions = sessions.filter((session) => {
                             style={{ width: `${progressValue}%` }}
                           />
                         </div>
-                      </div>
+                      </Link>
                     );
                   })}
                 </div>
