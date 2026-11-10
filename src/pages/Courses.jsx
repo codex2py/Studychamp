@@ -40,15 +40,6 @@ function getCourseColor(index) {
   return COURSE_COLORS[index % COURSE_COLORS.length];
 }
 
-function getInitials(name = "") {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 function Courses() {
   const [courses, setCourses] = useState(() => {
     const savedCourses = getStorageItem(STORAGE_KEYS.courses, []);
@@ -360,7 +351,10 @@ function Courses() {
                   ? course.topics
                   : [];
                 const finished = topics.filter(
-                  (topic) => topic.completed,
+                  (topic) => 
+                    topic.completed === true ||
+                    topic.isCompleted === true ||
+                    topic.status === "completed",
                 ).length;
                 const progress =
                   topics.length > 0
@@ -397,7 +391,7 @@ function Courses() {
                       )}
 
                       <Link
-                        to={"/courses/${course.id}"}
+                        to={`/courses/${course.id}`}
                         className="wrap-break-word text-lg font-semibold text-text transition hover:text-primary"
                       >
                         {course.name}
@@ -444,11 +438,11 @@ function Courses() {
                         className={`inline-flex items-center gap-1 text-sm font-semibold transition hover:underline ${color.text}`}
                       >
                         {progress === 100 && topics.length > 0
-                         ? 'Completed'
-                        :  topics.length === 0
-                          ? 'Get started'
-                          : 'In progress'}
-                          <ArrowUpRight size={15} />
+                          ? "Completed"
+                          : topics.length === 0
+                            ? "Get started"
+                            : "In progress"}
+                        <ArrowUpRight size={15} />
                       </Link>
                     </div>
                   </article>
@@ -585,22 +579,21 @@ function Courses() {
                   {formError}
                 </p>
               )}
-              <div className="flex flex-col reverse gap-3 pt-2 sm:flex-row sm:justify-end">
-                <button>
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="rounded-xl border border-border px-5 py-3 text-sm font-semibold text-text-secondary transition hover:bg-surface-muted"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
-                  >
-                    <Plus size={17} />
-                    Create course
-                  </button>
+              <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="rounded-xl border border-border px-5 py-3 text-sm font-semibold text-text-secondary transition hover:bg-surface-muted"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                >
+                  <Plus size={17} />
+                  Create course
                 </button>
               </div>
             </form>
