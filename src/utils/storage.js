@@ -3,13 +3,12 @@ const STORAGE_KEYS = {
     courses: 'studychamp:courses',
     sessions: 'studychamp:sessions',
     preferences: 'studychamp:preferences',
-}
+};
 
 export function getStorageItem(key, fallback = null) {
     try {
-        const item = localStorage.getItem(key)
-
-        return item === null ? fallback : JSON.parse(item)
+        const item = localStorage.getItem(key);
+        return item === null ? fallback : JSON.parse(item);
     } catch (error) {
         console.error(`Failed to read ${key} from localStorage:`, error)
         return fallback
@@ -19,15 +18,21 @@ export function getStorageItem(key, fallback = null) {
 export function setStorageItem(key, value) {
     try {
         localStorage.setItem(key, JSON.stringify(value))
-        return true
+        return true;
     } catch (error) {
-        console.error(`Failed to save %{key} to localStorage:`, error)
-        return false
+        console.error(`Failed to save ${key} to localStorage:`, error)
+        return false;
     }
 }
 
 export function removeStorageItem(key) {
-    localStorage.removeItem(key)
+    try {
+        localStorage.removeItem(key);
+        return true;
+    } catch (error) {
+        console.error(`Failed to remove ${key} from localStorage:`, error);
+        return false;
+    }
 }
 
-export { STORAGE_KEYS }
+export { STORAGE_KEYS };
