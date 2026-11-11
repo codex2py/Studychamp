@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import {
   UserRound,
   Target,
@@ -111,10 +112,10 @@ export default function Settings() {
   const [userName, setUserName] = useState('')
   const [savedName, setSavedName] = useState('')
   const [nameMessage, setNameMessage] = useState('')
-
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES)
   const [hasChanges, setHasChanges] = useState(false)
   const [saveMessage, setSaveMessage] = useState('')
+  const { onNameSaved } = useOutletContext()
 
   useEffect(() => {
     const storedName = getStorageItem(STORAGE_KEYS.userName, '')
@@ -146,6 +147,7 @@ export default function Settings() {
     )
 
     if (successful) {
+      onNameSaved(trimmedName)
       setUserName(trimmedName)
       setSavedName(trimmedName)
       setNameMessage('Your name has been updated.')
@@ -251,6 +253,7 @@ export default function Settings() {
                   className='inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50'
                 >
                   <Save size={15} />
+                  Save name
                 </button>
                 {nameMessage && (
                   <p className={`text-xs ${
