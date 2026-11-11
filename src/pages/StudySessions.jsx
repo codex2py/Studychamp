@@ -144,7 +144,6 @@ function StudySessions() {
                 session.status === "finished" ||
                 Boolean(session.completedAt || session.endedAt);
 
-        
         return {
           ...session,
           displayId: session.id ?? `session-${index}`,

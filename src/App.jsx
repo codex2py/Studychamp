@@ -33,7 +33,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      <Route element={<AppLayout userName={userName} />}>
+      <Route element={<AppLayout userName={userName} onNameSaved={handleNameSaved} />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:courseId" element={<CourseDetails />} />
