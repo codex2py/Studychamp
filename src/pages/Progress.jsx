@@ -116,9 +116,11 @@ function getCourseProgress(course) {
 
   if (topics.length > 0) {
     const completedTopics = topics.filter(
-      (topic) => topic.completed || topic.isCompleted,
-    ).length;
-
+      (topic) =>
+        topic.completed === true ||
+        topic.isCompleted === true ||
+        topic.status === 'completed',
+    ).length
     return Math.round((completedTopics / topics.length) * 100);
   }
 

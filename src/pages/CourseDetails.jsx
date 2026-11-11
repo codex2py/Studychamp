@@ -12,6 +12,14 @@ import {
 } from "lucide-react";
 import { getStorageItem, setStorageItem, STORAGE_KEYS } from "../utils/storage";
 
+function isTopicCompleted(topic) {
+  return (
+    topic.completed === true ||
+    topic.isCompleted === true ||
+    topic.status === "completed"
+  );
+}
+
 function CourseDetails() {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -54,16 +62,16 @@ function CourseDetails() {
               progress:
                 updatedTopics.length > 0
                   ? Math.round(
-                    (updatedTopics.filter(
-                      (topic) =>
-                        topic.completed === true ||
-                        topic.isCompleted === true ||
-                        topic.status === "completed"
-                    ).length /
-                      updatedTopics.length) *
-                      100,
-                  )
-                : 0,
+                      (updatedTopics.filter(
+                        (topic) =>
+                          topic.completed === true ||
+                          topic.isCompleted === true ||
+                          topic.status === "completed",
+                      ).length /
+                        updatedTopics.length) *
+                        100,
+                    )
+                  : 0,
             }
           : item,
       ),
@@ -103,7 +111,7 @@ function CourseDetails() {
   function handleToggleTopic(topicId) {
     const updatedTopics = topics.map((topic) =>
       String(topic.id) === String(topicId)
-        ? { ...topic, completed: !topic.completed }
+        ? { ...topic, completed: !isTopicCompleted(topic) }
         : topic,
     );
 
@@ -115,35 +123,35 @@ function CourseDetails() {
 
     updateCourseTopics(
       topics.filter((topic) => String(topic.id) !== String(topicToDelete.id)),
-    )
+    );
 
-    setTopicToDelete(null)
+    setTopicToDelete(null);
   }
 
   if (!course) {
-      return (
-        <div className="min-h-screen bg-background px-5 py-10 text-text sm:px-8">
-          <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-8 text-center sm:p-12">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary">
-              <BookOpen size={26} />
-            </div>
-            <h1 className="mt-5 font-serif text-2xl font-semibold">
-              Course not found
-            </h1>
-            <p className="mt-2 text-sm leading-6 text-text-secondary">
-              The course may have been deleted, or the link may be incorrect.
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate('/courses')}
-              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
-            >
-              <ArrowLeft size={17} />
-              Back to My Courses
-            </button>
+    return (
+      <div className="min-h-screen bg-background px-5 py-10 text-text sm:px-8">
+        <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-8 text-center sm:p-12">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary">
+            <BookOpen size={26} />
           </div>
+          <h1 className="mt-5 font-serif text-2xl font-semibold">
+            Course not found
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-text-secondary">
+            The course may have been deleted, or the link may be incorrect.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/courses")}
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+          >
+            <ArrowLeft size={17} />
+            Back to My Courses
+          </button>
         </div>
-      )
+      </div>
+    );
   }
 
   return (
@@ -151,125 +159,120 @@ function CourseDetails() {
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="flex items-center gap-2 text-sm text-text-secondary">
           <Link to="/courses" className="transition hover:text-primary">
-          My Courses
+            My Courses
           </Link>
           <span>/</span>
-          <span className="truncate font-medium text-text">
-            {course.name}
-          </span>
+          <span className="truncate font-medium text-text">{course.name}</span>
         </div>
 
-
         <header className="rounded-2xl border border-border bg-white p-5 sm:p-8">
-            <Link 
-              to="/courses"
-              className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary transition hover:text-primary"
-            >
-              <ArrowLeft size={27} />
-              Back to courses
-            </Link>
+          <Link
+            to="/courses"
+            className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary transition hover:text-primary"
+          >
+            <ArrowLeft size={27} />
+            Back to courses
+          </Link>
 
-            <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex min-w-0 items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-light text-primary">
-                  <BookOpen size={27} />
-                </div>
-                <div className="min-w-0">
-                  {course.code && (
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                      {course.code}
-                    </p>
-                  )}
-
-                  <h1 className="wrap-break-word font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
-                    {course.name}
-                  </h1>
-
-                  <p className="mt-2 text-sm leading-6 text-text-secondary">
-                    {course.description || 
-                      'Organize your topics and keep track of your learning.'}
-                  </p>
-                </div>
+          <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex min-w-0 items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-light text-primary">
+                <BookOpen size={27} />
               </div>
-
-              <span
-                className={`inline-flex shrink-0 items-center gap-2 self-start rounded-full px-3 py-2 text-xs font-semibold ${
-                  progress === 100 && topics.length > 0
-                    ? 'bg-success-light text-success'
-                    : 'bg-primary-light text-primary'
-                }`}
-              >
-                {progress === 100 && topics.length > 0 ? (
-                  <CircleCheck size={15} />
-                ) : (
-                  <Clock3 size={15} />
+              <div className="min-w-0">
+                {course.code && (
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-text-muted">
+                    {course.code}
+                  </p>
                 )}
-                {progress === 100 && topics.length > 0
-                  ? 'Completed'
-                  : topics.length === 0
-                    ? 'Not started'
-                    : 'In progress'}
-              </span>
-            </div>
 
-            <div className="mt-8 border-t border-border pt-6">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium text-text-secondary">
-                    Course progress
-                  </p>
-                  <p className="mt-1 text-3xl font-semibold tracking-tight">
-                    {progress}%
-                  </p>
-                </div>
-                <p className="text-right text-sm text-text-secondary">
-                  {completedCount} of {topics.length} topics completed
+                <h1 className="wrap-break-word font-serif text-3xl font-semibold tracking-tight sm:text-4xl">
+                  {course.name}
+                </h1>
+
+                <p className="mt-2 text-sm leading-6 text-text-secondary">
+                  {course.description ||
+                    "Organize your topics and keep track of your learning."}
                 </p>
               </div>
+            </div>
 
-              <div 
+            <span
+              className={`inline-flex shrink-0 items-center gap-2 self-start rounded-full px-3 py-2 text-xs font-semibold ${
+                progress === 100 && topics.length > 0
+                  ? "bg-success-light text-success"
+                  : "bg-primary-light text-primary"
+              }`}
+            >
+              {progress === 100 && topics.length > 0 ? (
+                <CircleCheck size={15} />
+              ) : (
+                <Clock3 size={15} />
+              )}
+              {progress === 100 && topics.length > 0
+                ? "Completed"
+                : topics.length === 0
+                  ? "Not started"
+                  : "In progress"}
+            </span>
+          </div>
+
+          <div className="mt-8 border-t border-border pt-6">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-sm font-medium text-text-secondary">
+                  Course progress
+                </p>
+                <p className="mt-1 text-3xl font-semibold tracking-tight">
+                  {progress}%
+                </p>
+              </div>
+              <p className="text-right text-sm text-text-secondary">
+                {completedCount} of {topics.length} topics completed
+              </p>
+            </div>
+
+            <div
               className="mt-4 h-3 overflow-hidden rounded-full bg-surface-muted"
               role="progressbar"
               aria-label="Course completion"
               aria-valuenow={progress}
               aria-valuemin={0}
               aria-valuemax={100}
-              >
-                <div
+            >
+              <div
                 className="h-full rounded-full bg-primary transition-all duration-300"
                 style={{ width: `${progress}%` }}
               />
-              </div>
-              <p className="mt-3 text-xs text-text-muted">
-                {topics.length === 0
-                  ? 'Add your first topic to begin tracking your progress.'
-                  : progress === 100
-                    ? 'Amazing work! You have completed every topic in this course.'
-                    : 'Keep going. Every completed topic brings you closer to your goal.'}
-              </p>
             </div>
+            <p className="mt-3 text-xs text-text-muted">
+              {topics.length === 0
+                ? "Add your first topic to begin tracking your progress."
+                : progress === 100
+                  ? "Amazing work! You have completed every topic in this course."
+                  : "Keep going. Every completed topic brings you closer to your goal."}
+            </p>
+          </div>
         </header>
 
         <section className="space-y-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold">
-                Study topics
-              </h2>
+              <h2 className="text-xl font-semibold">Study topics</h2>
               <p className="mt-1 text-sm text-text-secondary">
                 Break this subject into manageable pieces.
               </p>
             </div>
             <button
-            type="button" 
-            onClick={() => {
-              setShowTopicForm((previous) => !previous)
-              setTopicError('')
-            }}
-            className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+              type="button"
+              onClick={() => {
+                setShowTopicForm((previous) => !previous);
+                setTopicError("");
+              }}
+              className="inline-flex items-center justify-center gap-2 self-start rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
             >
               {showTopicForm ? <X size={18} /> : <Plus size={18} />}
-              {showTopicForm ? 'Cancel' : 'Add topic'}
+              {showTopicForm ? "Cancel" : "Add topic"}
             </button>
           </div>
 
@@ -279,40 +282,40 @@ function CourseDetails() {
               className="rounded-2xl border border-border bg-white p-5 sm:p-6"
             >
               <label
-               htmlFor="topic-name"
-               className="mb-2 block text-sm font-semibold"
-               >
+                htmlFor="topic-name"
+                className="mb-2 block text-sm font-semibold"
+              >
                 Topic name
-               </label>
-               <div className="flex flex-col gap-3 sm:flex-row">
-                  <input 
-                    id="topic-name"
-                    type="text"
-                    autoFocus
-                    maxLength={100}
-                    value={topicName}
-                    onChange={(event) => {
-                      setTopicName(event.target.value)
-                      setTopicError('')
-                    }}
-                    placeholder="e.g. Carbohydrate Metabolism"
-                    className="min-w-0 flex-1 rounded-xl border border-border bg-white px-4 py-4 text-sm outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10"
-                  />
+              </label>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  id="topic-name"
+                  type="text"
+                  autoFocus
+                  maxLength={100}
+                  value={topicName}
+                  onChange={(event) => {
+                    setTopicName(event.target.value);
+                    setTopicError("");
+                  }}
+                  placeholder="e.g. Carbohydrate Metabolism"
+                  className="min-w-0 flex-1 rounded-xl border border-border bg-white px-4 py-4 text-sm outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10"
+                />
 
-                  <button 
-                    type="submit"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
-                    >
-                    <Plus size={17} />
-                    Add topic
-                  </button>
-               </div>
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
+                >
+                  <Plus size={17} />
+                  Add topic
+                </button>
+              </div>
 
-               {topicError && (
+              {topicError && (
                 <p role="alert" className="mt-2 text-sm text-red-600">
                   {topicError}
                 </p>
-               )}
+              )}
             </form>
           )}
 
@@ -321,10 +324,8 @@ function CourseDetails() {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary">
                 <BookOpen size={26} />
               </div>
-              <h3 className="mt-4 font-semibold">
-                No topics added yet
-              </h3>
-              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-secondary"> 
+              <h3 className="mt-4 font-semibold">No topics added yet</h3>
+              <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-text-secondary">
                 Add the chapters or topics you need to study for this course.
                 You can mark each one complete as you go.
               </p>
@@ -352,7 +353,7 @@ function CourseDetails() {
 
                 <p className="text-xs font-medium text-text-secondary">
                   {completedCount === topics.length
-                    ? 'All completed'
+                    ? "All completed"
                     : `${topics.length - completedCount} remaining`}
                 </p>
               </div>
@@ -367,15 +368,15 @@ function CourseDetails() {
                       type="button"
                       onClick={() => handleToggleTopic(topic.id)}
                       aria-label={
-                        topic.completed
+                        isTopicCompleted(topic)
                           ? `Mark ${topic.name} incomplete`
                           : `Mark ${topic.name} complete`
                       }
-                      aria-pressed={Boolean(topic.completed)}
+                      aria-pressed={Boolean(isTopicCompleted(topic))}
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition ${
                         topic.completed
-                          ? 'border-success bg-success text-white'
-                          : 'border-border-strong bg-white hover:border-primary'
+                          ? "border-success bg-success text-white"
+                          : "border-border-strong bg-white hover:border-primary"
                       }`}
                     >
                       {topic.completed && <Check size={14} strokeWidth={3} />}
@@ -385,15 +386,15 @@ function CourseDetails() {
                       <p
                         className={`wrap-break-word text-sm font-medium ${
                           topic.completed
-                            ? 'text-text-muted line-through'
-                            : 'text-text'
+                            ? "text-text-muted line-through"
+                            : "text-text"
                         }`}
                       >
                         {index + 1}. {topic.name}
                       </p>
 
                       <p className="mt-1 text-xs text-text-muted">
-                        {topic.completed ? 'Completed' : 'Not completed'}
+                        {topic.completed ? "Completed" : "Not completed"}
                       </p>
                     </div>
 
@@ -412,17 +413,16 @@ function CourseDetails() {
             </div>
           )}
         </section>
-        
+
         <div className="flex items-start gap-3 rounded-2xl border border-border bg-surface-muted/60 p-5">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-success">
             <Check size={21} />
           </span>
           <div>
-            <h3 className="text-sm font-semibold">
-              Small steps still count
-            </h3>
+            <h3 className="text-sm font-semibold">Small steps still count</h3>
             <p>
-              Focus on understanding one topic at a time. Your progress will updated as your complete them.
+              Focus on understanding one topic at a time. Your progress will
+              updated as your complete them.
             </p>
           </div>
         </div>
@@ -430,16 +430,13 @@ function CourseDetails() {
 
       {topicToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-text/40 p-4 backdrop-blur-sm">
-          <section 
+          <section
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="delete-topic-title"
             className="w-full max-w-sm rounded-2xl border border-border bg-white p-6 shadow-xl"
           >
-            <h2
-              id="delete-topic-title"
-              className="text-lg font-semibold"
-            >
+            <h2 id="delete-topic-title" className="text-lg font-semibold">
               Delete this topic
             </h2>
             <p className="mt-2 text-sm leading-6 text-text-secondary">
@@ -455,7 +452,7 @@ function CourseDetails() {
                 Cancel
               </button>
 
-              <button 
+              <button
                 type="button"
                 onClick={handleDeleteTopic}
                 className="flex-1 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
@@ -467,7 +464,7 @@ function CourseDetails() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default CourseDetails;
