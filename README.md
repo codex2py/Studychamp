@@ -10,9 +10,9 @@ StudyChamp started with a conversation I had with a friend who studies medicine.
 
 She mentioned that she was getting distracted while studying and wanted a way to account for her time. That got me thinking about how difficult it can be to keep track of actual study hours, especially when you're dealing with several courses and a lot of material.
 
-I started thinking about what a website for this could look like. I didn't want it to be just another timer. I wanted somewhere a student could organise their courses, divide them into topics, track their study sessions, and see how consistently they were actually studying.
+I started thinking about what a website for this could look like. I wanted somewhere a student could organise their courses, divide them into topics, track their study sessions, and see how consistently they were actually studying.
 
-That's how StudyChamp started.
+That's how I started StudyChamp.
 
 ## From Figma to a working website
 
@@ -22,7 +22,6 @@ After settling on the design, I moved into VS Code and started setting up the pr
 
 I didn't build everything in one go. I worked on the application structure first, then the welcome screen, sidebar and navigation. From there, I started working on the actual pages and connecting them.
 
-One thing I paid attention to was making sure the pages weren't just separate designs. They needed to work with the same information.
 
 ## What I built
 
